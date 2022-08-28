@@ -1,0 +1,20 @@
+manifest:
+    remotes:
+      - name: seenemikk
+        url-base: https://github.com/seenemikk
+      - name: ncs
+        url-base: https://github.com/nrfconnect
+
+    defaults:
+        remote: seenemikk
+
+    projects:
+      - name: nrf
+        repo-path: sdk-nrf
+        remote: seenemikk
+        revision: v2.0.2
+        import: true
+      # You can override nrf imports
+    
+    self:
+        path: application
