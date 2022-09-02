@@ -1,0 +1,27 @@
+description: GC9A01A display controller
+
+compatible: "galaxycore,gc9a01a"
+
+include: [spi-device.yaml, display-controller.yaml]
+
+properties:
+    reset-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            RESET pin.
+            The RESET pin of GC9A01A is active low.
+            If connected directly the MCU pin should be configured
+            as active low.
+    cmd-data-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            D/CX pin. The D/CX pin of GC9A01A is active low (transmission command byte).
+            If connected directly the MCU pin should be configured
+            as active low.
+    backlight-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            Backlight pin. Should be configured as active high.

@@ -1,0 +1,7 @@
+config GC9A01A
+    bool "GC9A01A Display Driver"
+    default n
+    select SPI
+    select DISPLAY
+    help
+        Enable GC9A01A display driver
