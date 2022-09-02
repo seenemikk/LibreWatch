@@ -161,55 +161,55 @@ static int gc9a01a_write(const struct device *dev, const uint16_t x, const uint1
     struct gc9a01a_cmd cmd = { .cmd = GC9A01A_CMD_MEM_WRITE, .data = buf, .data_len = desc->height * desc->width * 2 };
     ret = gc9a01a_transmit(dev, &cmd);
 
-	return ret;
+    return ret;
 }
 
 static int gc9a01a_read(const struct device *dev, const uint16_t x, const uint16_t y, const struct display_buffer_descriptor *desc, void *buf)
 {
-	return -ENOTSUP;
+    return -ENOTSUP;
 }
 
 static void *gc9a01a_get_framebuffer(const struct device *dev)
 {
-	return NULL;
+    return NULL;
 }
 
 static int gc9a01a_set_brightness(const struct device *dev, const uint8_t brightness)
 {
     // TODO
-	return 0;
+    return 0;
 }
 
 static int gc9a01a_set_contrast(const struct device *dev, const uint8_t contrast)
 {
-	return -ENOTSUP;
+    return -ENOTSUP;
 }
 
 static void gc9a01a_get_capabilities(const struct device *dev, struct display_capabilities *capabilities)
 {
-	const struct gc9a01a_config *config = dev->config;
+    const struct gc9a01a_config *config = dev->config;
 
-	memset(capabilities, 0, sizeof(*capabilities));
-	capabilities->x_resolution = config->width;
-	capabilities->y_resolution = config->height;
+    memset(capabilities, 0, sizeof(*capabilities));
+    capabilities->x_resolution = config->width;
+    capabilities->y_resolution = config->height;
 
-	capabilities->supported_pixel_formats = PIXEL_FORMAT_RGB_565;
-	capabilities->current_pixel_format = PIXEL_FORMAT_RGB_565;
+    capabilities->supported_pixel_formats = PIXEL_FORMAT_RGB_565;
+    capabilities->current_pixel_format = PIXEL_FORMAT_RGB_565;
 
-	capabilities->current_orientation = DISPLAY_ORIENTATION_NORMAL;
+    capabilities->current_orientation = DISPLAY_ORIENTATION_NORMAL;
 }
 
 static int gc9a01a_set_pixel_format(const struct device *dev, const enum display_pixel_format pixel_format)
 {
-	return -ENOTSUP;
+    return -ENOTSUP;
 }
 
 static int gc9a01a_set_orientation(const struct device *dev, const enum display_orientation orientation)
 {
-	if (orientation == DISPLAY_ORIENTATION_NORMAL) return 0;
+    if (orientation == DISPLAY_ORIENTATION_NORMAL) return 0;
 
-	LOG_ERR("Changing display orientation not implemented");
-	return -ENOTSUP;
+    LOG_ERR("Changing display orientation not implemented");
+    return -ENOTSUP;
 }
 
 #ifdef CONFIG_PM_DEVICE
@@ -328,16 +328,16 @@ static int gc9a01a_pm_action(const struct device *dev, enum pm_device_action act
 #endif // CONFIG_PM_DEVICE
 
 static const struct display_driver_api gc9a01a_api = {
-	.blanking_on = gc9a01a_blanking_on,
-	.blanking_off = gc9a01a_blanking_off,
-	.write = gc9a01a_write,
-	.read = gc9a01a_read,
-	.get_framebuffer = gc9a01a_get_framebuffer,
-	.set_brightness = gc9a01a_set_brightness,
-	.set_contrast = gc9a01a_set_contrast,
-	.get_capabilities = gc9a01a_get_capabilities,
-	.set_pixel_format = gc9a01a_set_pixel_format,
-	.set_orientation = gc9a01a_set_orientation,
+    .blanking_on = gc9a01a_blanking_on,
+    .blanking_off = gc9a01a_blanking_off,
+    .write = gc9a01a_write,
+    .read = gc9a01a_read,
+    .get_framebuffer = gc9a01a_get_framebuffer,
+    .set_brightness = gc9a01a_set_brightness,
+    .set_contrast = gc9a01a_set_contrast,
+    .get_capabilities = gc9a01a_get_capabilities,
+    .set_pixel_format = gc9a01a_set_pixel_format,
+    .set_orientation = gc9a01a_set_orientation,
 };
 
 #define GC9A01A_INIT(inst)                                                                                  \

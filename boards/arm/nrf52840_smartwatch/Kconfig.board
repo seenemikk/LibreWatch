@@ -1,3 +1,3 @@
 config BOARD_NRF52840_SMARTWATCH
-	bool "nRF52840 SmartWatch"
-	depends on SOC_NRF52840_QIAA
+    bool "nRF52840 SmartWatch"
+    depends on SOC_NRF52840_QIAA
