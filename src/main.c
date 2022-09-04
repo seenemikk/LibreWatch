@@ -3,14 +3,42 @@
 #include <device.h>
 #include <zephyr/kernel.h>
 #include <drivers/display.h>
+#include <drivers/kscan.h>
 
 LOG_MODULE_REGISTER(app);
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
 
+void kscan_callback(const struct device *dev, uint32_t row, uint32_t column, bool pressed)
+{
+    LOG_INF("%s @ (%d, %d)", pressed ? "Pressed" : "Released", column, row);
+}
+
 void main(void)
 {
+    const struct device *kscan_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_keyboard_scan));
+    if (!device_is_ready(kscan_dev)) {
+        LOG_ERR("Device %s not found. Aborting sample.",
+            kscan_dev->name);
+        return;
+    }
+
+    if (kscan_config(kscan_dev, kscan_callback)) {
+        LOG_ERR("Failed configuring kscan");
+        return;
+    }
+
+    if (kscan_enable_callback(kscan_dev)) {
+        LOG_ERR("Failed enabling kscan callback");
+        return;
+    }
+
+    while (1) {
+        LOG_ERR("RUNNING");
+        k_sleep(K_SECONDS(1));
+    }
+
     const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
     if (!device_is_ready(display_dev)) {
         LOG_ERR("Device %s not found. Aborting sample.",

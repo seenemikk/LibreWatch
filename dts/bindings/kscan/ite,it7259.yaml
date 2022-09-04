@@ -1,0 +1,20 @@
+description: IT7259 capacitive touch sensor
+
+compatible: "ite,it7259"
+
+include: [i2c-device.yaml, kscan.yaml]
+
+properties:
+    reset-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            RESET pin.
+            The RESET pin of IT7259 is active low.
+            If connected directly the MCU pin should be configured
+            as active low.
+    int-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            Interrupt pin. Should be configured as active low.

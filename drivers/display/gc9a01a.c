@@ -153,7 +153,7 @@ static int gc9a01a_write(const struct device *dev, const uint16_t x, const uint1
         y + desc->height > config->height ||
         desc->width * desc->height * 2 > desc->buf_size) return -EINVAL;
 
-    LOG_DBG("Writing (%dx%d) to (%dx%dx)", x, y, desc->width, desc->height);
+    LOG_DBG("Writing (%dx%d) to (%dx%d)", desc->width, desc->height, x, y);
 
     ret = gc9a01a_set_write_area(dev, x, y, desc->width, desc->height);
     if (ret) return ret;
@@ -214,7 +214,7 @@ static int gc9a01a_set_orientation(const struct device *dev, const enum display_
 
 #ifdef CONFIG_PM_DEVICE
 
-static void gc9a01_sleep_in(const struct device *dev)
+static void gc9a01a_sleep_in(const struct device *dev)
 {
     struct gc9a01a_cmd cmd = { .cmd = GC9A01A_CMD_SLEEP_IN };
     gc9a01a_transmit(dev, &cmd);
@@ -222,7 +222,7 @@ static void gc9a01_sleep_in(const struct device *dev)
 
 #endif // CONFIG_PM_DEVICE
 
-static void gc9a01_sleep_out(const struct device *dev)
+static void gc9a01a_sleep_out(const struct device *dev)
 {
     struct gc9a01a_cmd cmd = { .cmd = GC9A01A_CMD_SLEEP_OUT };
     gc9a01a_transmit(dev, &cmd);
@@ -293,9 +293,11 @@ static int gc9a01a_init(const struct device *dev)
     ret = gc9a01a_cmd_init(dev);
     if (ret) return ret;
 
-    gc9a01_sleep_out(dev);
+    gc9a01a_sleep_out(dev);
 
     gc9a01a_blanking_on(dev);
+
+    LOG_DBG("GC9A01A initialized");
 
     return 0;
 }
@@ -306,14 +308,14 @@ static int gc9a01a_pm_action(const struct device *dev, enum pm_device_action act
 {
     switch (action) {
         case PM_DEVICE_ACTION_RESUME: {
-            gc9a01_sleep_out(dev);
+            gc9a01a_sleep_out(dev);
             gc9a01a_blanking_off(dev);
             break;
         }
 
         case PM_DEVICE_ACTION_SUSPEND: {
             gc9a01a_blanking_on(dev);
-            gc9a01_sleep_in(dev);
+            gc9a01a_sleep_in(dev);
             break;
         }
 
@@ -350,7 +352,7 @@ static const struct display_driver_api gc9a01a_api = {
         .height = DT_INST_PROP(inst, height),                                                               \
     };                                                                                                      \
                                                                                                             \
-    PM_DEVICE_DT_INST_DEFINE(inst, gc9a01a_pm_action);			                                            \
+    PM_DEVICE_DT_INST_DEFINE(inst, gc9a01a_pm_action);                                                      \
                                                                                                             \
     DEVICE_DT_INST_DEFINE(inst, gc9a01a_init, PM_DEVICE_DT_INST_GET(inst),                                  \
                           NULL, &gc9a01a_config_ ## inst,                                                   \

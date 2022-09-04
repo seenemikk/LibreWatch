@@ -11,6 +11,7 @@
         zephyr,flash = &flash0;
         zephyr,code-partition = &slot0_partition;
         zephyr,display = &gc9a01a;
+        zephyr,keyboard_scan = &it7259;
     };
 };
 
@@ -30,13 +31,22 @@
     status = "okay";
 };
 
-// Touch sensor
 &i2c0 {
     compatible = "nordic,nrf-twim";
     status = "okay";
     pinctrl-0 = <&i2c0_default>;
     pinctrl-1 = <&i2c0_sleep>;
     pinctrl-names = "default", "sleep";
+
+    // Touch sensor
+    it7259: it7259@46 {
+        compatible = "ite,it7259";
+        reg = <0x46>;
+        label = "IT7259";
+
+        reset-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
+        int-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+    };
 };
 
 // IMU

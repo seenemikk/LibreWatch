@@ -1,3 +1,5 @@
 comment "External Drivers"
 
 rsource "display/Kconfig"
+
+rsource "kscan/Kconfig"

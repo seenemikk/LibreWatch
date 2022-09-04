@@ -1,0 +1,7 @@
+config IT7259
+    bool "IT7259 Kscan Driver"
+    default n
+    select I2C
+    select KSCAN
+    help
+        Enable IT7259 kscan driver
