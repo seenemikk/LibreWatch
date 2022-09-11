@@ -3,80 +3,46 @@
 #include <device.h>
 #include <zephyr/kernel.h>
 #include <drivers/display.h>
-#include <drivers/kscan.h>
+#include <lvgl.h>
 
 LOG_MODULE_REGISTER(app);
 
-/* 1000 msec = 1 sec */
-#define SLEEP_TIME_MS   1000
-
-void kscan_callback(const struct device *dev, uint32_t row, uint32_t column, bool pressed)
-{
-    LOG_INF("%s @ (%d, %d)", pressed ? "Pressed" : "Released", column, row);
-}
-
 void main(void)
 {
-    const struct device *kscan_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_keyboard_scan));
-    if (!device_is_ready(kscan_dev)) {
-        LOG_ERR("Device %s not found. Aborting sample.",
-            kscan_dev->name);
-        return;
-    }
+    uint32_t count = 0U;
+    char count_str[11] = {0};
+    const struct device *display_dev;
+    lv_obj_t *hello_world_label;
+    lv_obj_t *count_label;
 
-    if (kscan_config(kscan_dev, kscan_callback)) {
-        LOG_ERR("Failed configuring kscan");
-        return;
-    }
-
-    if (kscan_enable_callback(kscan_dev)) {
-        LOG_ERR("Failed enabling kscan callback");
-        return;
-    }
-
-    while (1) {
-        LOG_ERR("RUNNING");
-        k_sleep(K_SECONDS(1));
-    }
-
-    const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
+    display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
     if (!device_is_ready(display_dev)) {
-        LOG_ERR("Device %s not found. Aborting sample.",
-            display_dev->name);
+        LOG_ERR("Device not ready, aborting test");
         return;
     }
 
+    lv_obj_t *hello_world_button;
+
+    hello_world_button = lv_btn_create(lv_scr_act());
+    lv_obj_align(hello_world_button, LV_ALIGN_CENTER, 0, 0);
+    hello_world_label = lv_label_create(hello_world_button);
+
+    lv_label_set_text(hello_world_label, "Hello world!");
+    lv_obj_align(hello_world_label, LV_ALIGN_CENTER, 0, 0);
+
+    count_label = lv_label_create(lv_scr_act());
+    lv_obj_align(count_label, LV_ALIGN_BOTTOM_MID, 0, 0);
+
+    lv_task_handler();
     display_blanking_off(display_dev);
 
-    uint8_t *buff = k_malloc(240 * 240 * 2);
-    memset(buff, 0xff, 240 * 240 * 2);
-
-    struct display_buffer_descriptor descc = {.buf_size = 240 * 240 * 2, .height = 240, .width = 240, .pitch = 240};
-    display_write(display_dev, 0, 0, &descc, buff);
-
-    uint8_t cross[] = {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    };
-    descc.buf_size = sizeof(cross);
-    descc.height = 10;
-    descc.width = 10;
-    descc.pitch = 10;
-    display_write(display_dev, 115, 115, &descc, cross);
-
-
-    uint8_t clr = 0xaa;
     while (1) {
-        // clr = ~clr;
-        // memset(buff, clr, 240 * 240 * 2);
-        // display_write(display_dev, 0, 0, &descc, buff);
+        if ((count % 100) == 0U) {
+            sprintf(count_str, "%d", count/100U);
+            lv_label_set_text(count_label, count_str);
+        }
+        lv_task_handler();
+        k_sleep(K_MSEC(10));
+        ++count;
     }
 }
