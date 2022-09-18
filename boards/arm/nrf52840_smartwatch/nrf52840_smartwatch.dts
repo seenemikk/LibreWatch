@@ -58,11 +58,11 @@
     pinctrl-names = "default", "sleep";
 };
 
-&spi2 {
+&spi3 {
     compatible = "nordic,nrf-spim";
     status = "okay";
-    pinctrl-0 = <&spi2_default>;
-    pinctrl-1 = <&spi2_sleep>;
+    pinctrl-0 = <&spi3_default>;
+    pinctrl-1 = <&spi3_sleep>;
     pinctrl-names = "default", "sleep";
     cs-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
 
@@ -70,7 +70,7 @@
     gc9a01a: gc9a01a@0 {
         compatible = "galaxycore,gc9a01a";
         reg = <0>;
-        spi-max-frequency = <16000000>;
+        spi-max-frequency = <32000000>;
         label = "GC9A01A";
 
         reset-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
