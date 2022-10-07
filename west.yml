@@ -4,6 +4,10 @@ manifest:
         url-base: https://github.com/seenemikk
       - name: ncs
         url-base: https://github.com/nrfconnect
+      - name: nordicsemi
+        url-base: https://github.com/NordicSemiconductor
+      - name: zephyr
+        url-base: https://github.com/zephyrproject-rtos
 
     defaults:
         remote: seenemikk
@@ -35,6 +39,14 @@ manifest:
       - name: lvgl
         revision: af95bdfcf6784edd958ea08139c713e2d3dee7af
         path: modules/lib/gui/lvgl
+      - name: tinycrypt
+        revision: 3e9a49d2672ec01435ffbf0d788db6d95ef28de0
+        path: modules/crypto/tinycrypt
+        remote: zephyr
+      - name: zcbor
+        remote: nordicsemi
+        revision: 3d36ae19cb05d28cea23b4c870ae965c44215e9c
+        path: modules/lib/zcbor
 
     self:
         path: application
