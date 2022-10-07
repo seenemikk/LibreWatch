@@ -18,3 +18,10 @@ project(nrf52840_smartwatch)
 target_sources(app PRIVATE src/main.c)
 
 zephyr_include_directories(conf)
+
+zephyr_library_include_directories(
+  src/events
+)
+
+add_subdirectory(src/modules)
+add_subdirectory(src/events)

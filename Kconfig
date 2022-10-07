@@ -1,3 +1,8 @@
-mainmenu "Application"
-
+menu "Zephyr Kernel"
 source "Kconfig.zephyr"
+endmenu
+
+menu "Application"
+rsource "src/modules/Kconfig"
+rsource "src/events/Kconfig"
+endmenu

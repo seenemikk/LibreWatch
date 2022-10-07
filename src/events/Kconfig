@@ -1,0 +1,12 @@
+menu "Events"
+
+config SMARTWATCH_PASSKEY_EVENT
+    bool "Enable passkey event"
+    depends on CAF
+
+config SMARTWATCH_PASSKEY_EVENT_INIT_LOG
+    bool "Log passkey events"
+    default n
+    depends on SMARTWATCH_PASSKEY_EVENT
+
+endmenu
