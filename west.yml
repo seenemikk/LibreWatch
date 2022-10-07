@@ -11,7 +11,7 @@ manifest:
     projects:
       - name: nrf
         repo-path: sdk-nrf
-        revision: v2.0.2
+        revision: 36eac1fe812af79da6d11060778366b0a66da309
       - name: zephyr
         repo-path: sdk-zephyr
         revision: v3.0.99-ncs1-1
