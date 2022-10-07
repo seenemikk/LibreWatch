@@ -16,3 +16,5 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(nrf52840_smartwatch)
 
 target_sources(app PRIVATE src/main.c)
+
+zephyr_include_directories(conf)
