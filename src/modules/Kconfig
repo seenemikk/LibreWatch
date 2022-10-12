@@ -1,1 +1,2 @@
+rsource "Kconfig.cts"
 rsource "Kconfig.ble_passkey"
