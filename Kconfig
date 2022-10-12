@@ -5,4 +5,5 @@ endmenu
 menu "Application"
 rsource "src/modules/Kconfig"
 rsource "src/events/Kconfig"
+rsource "src/ui/Kconfig"
 endmenu

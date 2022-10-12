@@ -6,7 +6,11 @@ config SMARTWATCH_PASSKEY_EVENT
 
 config SMARTWATCH_PASSKEY_EVENT_INIT_LOG
     bool "Log passkey events"
-    default n
+    default y
     depends on SMARTWATCH_PASSKEY_EVENT
+
+config SMARTWATCH_UI_EVENT_INIT_LOG
+    bool "Log ui events"
+    default y
 
 endmenu
