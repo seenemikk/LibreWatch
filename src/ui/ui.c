@@ -2,11 +2,14 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/display.h>
 #include <zephyr/drivers/kscan.h>
+#include <zephyr/pm/device_runtime.h>
 
 #define MODULE ui
 #include <app_event_manager.h>
 #include <caf/events/module_state_event.h>
 #include <caf/events/power_event.h>
+
+#include <zephyr/pm/device.h>
 
 #include "lvgl.h"
 
@@ -20,7 +23,7 @@ LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
 #define POPUP_ANIM_SPEED    200
 #define APP_ANIM_SPEED      200
 
-// TODO sucbscirbe to kscan cb, send wake_up when called
+// TODO wakeup on new popup
 // TODO buzzer
 
 static const struct device *display = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
@@ -38,6 +41,8 @@ struct ui {
     } apps;
 
     struct k_work_delayable work;
+    bool display_active;
+    bool touch_active;
 };
 
 static struct ui ui = { .popups.active = UI_POPUP_COUNT, .apps.active = UI_APP_COUNT };
@@ -56,6 +61,12 @@ static void ui_task(struct k_work *work)
 {
     lv_task_handler();
     queue_ui_task();
+}
+
+static void send_wake_up(void)
+{
+    struct wake_up_event *evt = new_wake_up_event();
+    APP_EVENT_SUBMIT(evt);
 }
 
 /////////////// POPUPS ///////////////
@@ -205,6 +216,11 @@ static void init_apps(void)
 
 //////////////// APPS ////////////////
 
+void touch_cb(const struct device *dev, uint32_t row, uint32_t column, bool pressed)
+{
+    send_wake_up();
+}
+
 static void ui_init(void)
 {
     if (!device_is_ready(display)) {
@@ -219,12 +235,17 @@ static void ui_init(void)
 
     init_popups();
     init_apps();
-
     lv_task_handler();
-    display_blanking_off(display);
 
     k_work_init_delayable(&ui.work, ui_task);
     queue_ui_task();
+
+    pm_device_runtime_get(display);
+    ui.display_active = true;
+
+    kscan_config(touch, touch_cb);
+    pm_device_runtime_get(touch);
+    ui.touch_active = true;
 
     module_set_state(MODULE_STATE_READY);
     return;
@@ -251,17 +272,30 @@ static void handle_popup_show(struct ui_popup_show_event *evt)
 
 static void handle_power_down(struct power_down_event *evt)
 {
-    // somehow subscribe to touch interrupt -> wakeup
-    // pm disp, touch
-    // cancel_ui_task();
+    if (ui.display_active) {
+        pm_device_runtime_put(display);
+        ui.display_active = false;
+    }
+    if (ui.touch_active) {
+        pm_device_runtime_put(touch);
+        ui.touch_active = false;
+    }
+    cancel_ui_task();
+    module_set_state(MODULE_STATE_STANDBY);
 }
 
 static void handle_wake_up(struct wake_up_event *evt)
 {
-    // unsubscribe touch interrupt
-    // pm disp, touch
-    // lv_task_handler();
-    // queue_ui_task();
+    if (!ui.display_active) {
+        pm_device_runtime_get(display);
+        ui.display_active = true;
+    }
+    if (!ui.touch_active) {
+        pm_device_runtime_get(touch);
+        ui.touch_active = true;
+    }
+    queue_ui_task();
+    module_set_state(MODULE_STATE_READY);
 }
 
 #endif // IS_ENABLED(CONFIG_CAF_POWER_MANAGER)

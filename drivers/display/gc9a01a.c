@@ -7,6 +7,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/display.h>
 #include <zephyr/pm/device.h>
+#include <zephyr/pm/device_runtime.h>
 #include <zephyr/sys/byteorder.h>
 
 #define LOG_LEVEL CONFIG_DISPLAY_LOG_LEVEL
@@ -90,17 +91,21 @@ static int gc9a01a_transmit(const struct device *dev, struct gc9a01a_cmd *cmd)
     struct spi_buf buf = { .buf = &cmd->cmd, .len = 1 };
     struct spi_buf_set buf_set = { .buffers = &buf, .count = 1 };
 
+    pm_device_busy_set(dev);
+
     gpio_pin_set_dt(&config->cmd_data_gpio, 1);
     ret = spi_write_dt(&config->bus, &buf_set);
-    if (ret) return ret;
+    if (ret) goto end;
 
-    if (cmd->data == NULL || cmd->data_len == 0) return 0;
+    if (cmd->data == NULL || cmd->data_len == 0) goto end;
 
     buf.buf = cmd->data;
     buf.len = cmd->data_len;
     gpio_pin_set_dt(&config->cmd_data_gpio, 0);
     ret = spi_write_dt(&config->bus, &buf_set);
 
+end:
+    pm_device_busy_clear(dev);
     return ret;
 }
 
@@ -158,7 +163,7 @@ static int gc9a01a_write(const struct device *dev, const uint16_t x, const uint1
     ret = gc9a01a_set_write_area(dev, x, y, desc->width, desc->height);
     if (ret) return ret;
 
-    struct gc9a01a_cmd cmd = { .cmd = GC9A01A_CMD_MEM_WRITE, .data = buf, .data_len = desc->height * desc->width * 2 };
+    struct gc9a01a_cmd cmd = { .cmd = GC9A01A_CMD_MEM_WRITE, .data = (uint8_t *)buf, .data_len = desc->height * desc->width * 2 };
     ret = gc9a01a_transmit(dev, &cmd);
 
     return ret;
@@ -259,6 +264,12 @@ static int gc9a01a_init(const struct device *dev)
     if (!spi_is_ready(&config->bus)) {
         LOG_ERR("SPI not ready");
         return -ENODEV;
+    }
+
+    ret = pm_device_runtime_enable(dev);
+    if ((ret != 0) && (ret != -ENOSYS)) {
+        LOG_ERR("Failed enabling power management");
+        return ret;
     }
 
     if (!device_is_ready(config->backlight_gpio.port)) {

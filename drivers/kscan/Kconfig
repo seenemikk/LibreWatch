@@ -5,3 +5,9 @@ config IT7259
     select KSCAN
     help
         Enable IT7259 kscan driver
+
+config IT7259_CB_COUNT
+    int "Maximum callback count"
+    default 1
+    help
+        Maximum number of callbacks that can be registered

@@ -16,7 +16,7 @@ config SMARTWATCH_CTS_BACKUP
     default y
 
 config SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS
-    int
+    int "CTS backup interval"
     default 5
     depends on SMARTWATCH_CTS_BACKUP
     help

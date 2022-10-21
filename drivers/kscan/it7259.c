@@ -7,6 +7,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/kscan.h>
 #include <zephyr/pm/device.h>
+#include <zephyr/pm/device_runtime.h>
 
 #define LOG_LEVEL CONFIG_KSCAN_LOG_LEVEL
 #include <zephyr/logging/log.h>
@@ -14,6 +15,10 @@ LOG_MODULE_REGISTER(kscan_it7259);
 
 #define MAX_CMD_LEN     5
 #define CMD_RETRY_CNT   5
+
+#if CONFIG_IT7259_CB_COUNT < 1
+#error "Max callback count cannot be less than 1"
+#endif // CONFIG_IT7259_CB_COUNT < 1
 
 struct it7259_config {
     struct i2c_dt_spec bus;
@@ -25,7 +30,7 @@ struct it7259_data {
     const struct device *dev;
     struct k_work work;
     struct gpio_callback int_gpio_cb;
-    kscan_callback_t cb;
+    kscan_callback_t cb[CONFIG_IT7259_CB_COUNT];
     atomic_t cb_enabled;
     bool pressed;
     uint8_t x;
@@ -42,19 +47,25 @@ static int it7259_send_cmd(const struct device *dev, uint8_t *cmd, size_t cmd_le
     uint8_t tx[MAX_CMD_LEN + 1] = { IT7259_CMD_BUFFER };
     memcpy(&tx[1], cmd, cmd_len);
 
+    pm_device_busy_set(dev);
+
     ret = i2c_write_dt(&config->bus, tx, cmd_len + 1);
-    if (ret) return ret;
+    if (ret) goto end;
 
     tx[0] = IT7259_QUERY_BUFFER;
     uint8_t rx[1] = {0};
     for (int i = 0; i < CMD_RETRY_CNT; i++) {
         ret = i2c_write_read_dt(&config->bus, tx, 1, rx, sizeof(rx));
-        if (ret == 0 && IT7259_QUERY_BUF_STATUS(rx[0]) == IT7259_QUERY_BUF_DONE) return 0;
+        if (ret == 0 && IT7259_QUERY_BUF_STATUS(rx[0]) == IT7259_QUERY_BUF_DONE) goto end;
+        if (cmd[0] == IT7259_CMD_SET_PWR_MODE) goto end; // SET_PWR_MODE doesn't answer with an ACK, so we can just break
 
         k_sleep(K_MSEC(10));
     }
+    ret = -EIO;
 
-    return -EIO;
+end:
+    pm_device_busy_clear(dev);
+    return ret;
 }
 
 static int it7259_get_cmd_resp(const struct device *dev, uint8_t *resp, size_t resp_len)
@@ -64,8 +75,12 @@ static int it7259_get_cmd_resp(const struct device *dev, uint8_t *resp, size_t r
     const struct it7259_config *config = dev->config;
     int ret = 0;
 
+    pm_device_busy_set(dev);
+
     uint8_t tx[] = { IT7259_CMD_RESP_BUFFER };
     ret = i2c_write_read_dt(&config->bus, tx, sizeof(tx), resp, resp_len);
+
+    pm_device_busy_clear(dev);
 
     return ret;
 }
@@ -75,13 +90,15 @@ static void it7259_work_handler(struct k_work *work)
     struct it7259_data *data = CONTAINER_OF(work, struct it7259_data, work);
     const struct it7259_config *config = data->dev->config;
 
+    pm_device_busy_set(data->dev);
+
     uint8_t point_data[0x0e] = {0};
     for (int i = 0; i < CMD_RETRY_CNT; i++) {
         if (i2c_write_read_dt(&config->bus, (uint8_t[]){ IT7259_POINT_INF_BUFFER }, 1, point_data, sizeof(point_data)) == 0) break;
 
         if (i == CMD_RETRY_CNT - 1) {
             LOG_ERR("Failed reading point data");
-            return;
+            goto end;
         }
         k_sleep(K_MSEC(10));
     }
@@ -93,12 +110,19 @@ static void it7259_work_handler(struct k_work *work)
         data->y = point_data[4];
         data->pressed = true;
     } else {
-        return;
+        goto end;
     }
 
     LOG_DBG("%s @ (%d, %d)", data->pressed ? "Pressed" : "Released", data->x, data->y);
 
-    if (data->cb && atomic_get(&data->cb_enabled)) data->cb(data->dev, data->y, data->x, data->pressed);
+    if (!atomic_get(&data->cb_enabled)) goto end;
+
+    for (int i = 0; i < CONFIG_IT7259_CB_COUNT; i++) {
+        if (data->cb[i]) data->cb[i](data->dev, data->y, data->x, data->pressed);
+    }
+
+end:
+    pm_device_busy_clear(data->dev);
 }
 
 static void it7259_int_handler(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
@@ -117,9 +141,14 @@ static int it7259_config(const struct device *dev, kscan_callback_t callback)
         return -EINVAL;
     }
 
-    data->cb = callback;
+    for (int i = 0; i < CONFIG_IT7259_CB_COUNT; i++) {
+        if (data->cb[i] != NULL) continue;
 
-    return 0;
+        data->cb[i] = callback;
+        return 0;
+    }
+
+    return -ENOSPC;
 }
 
 static int it7259_disable_callback(const struct device *dev)
@@ -172,6 +201,12 @@ static int it7259_init(const struct device *dev)
     if (!device_is_ready(config->bus.bus)) {
         LOG_ERR("I2C not ready");
         return -ENODEV;
+    }
+
+    ret = pm_device_runtime_enable(dev);
+    if ((ret != 0) && (ret != -ENOSYS)) {
+        LOG_ERR("Failed enabling power management");
+        return ret;
     }
 
     if (!device_is_ready(config->int_gpio.port)) {
