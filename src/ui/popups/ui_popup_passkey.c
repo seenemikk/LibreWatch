@@ -5,7 +5,7 @@
 #define MODULE ui_popup_passkey
 #include "passkey_event.h"
 
-#define POPUP_CLOSE_DELAY_S     5
+#define POPUP_CLOSE_DELAY_S     10
 
 static lv_obj_t *label;
 static lv_obj_t *screen;
