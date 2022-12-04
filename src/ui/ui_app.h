@@ -4,7 +4,7 @@
 
 enum ui_app_type {
     UI_APP_HOME,
-    UI_APP_TIMER,
+    UI_APP_STOPPER,
     UI_APP_COUNT,
 };
 BUILD_ASSERT(UI_APP_COUNT > 0, "No apps are defined");
