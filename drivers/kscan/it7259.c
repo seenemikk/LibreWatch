@@ -272,6 +272,10 @@ static int it7259_pm_action(const struct device *dev, enum pm_device_action acti
             break;
         }
 
+        case PM_DEVICE_ACTION_RESUME: {
+            break;
+        }
+
         default: {
             return -ENOTSUP;
         }
