@@ -1,0 +1,1 @@
+add_subdirectory_ifdef(CONFIG_ICM42605_I2C icm42605)

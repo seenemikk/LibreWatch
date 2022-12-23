@@ -1,13 +1,15 @@
-config IT7259
+menuconfig IT7259
     bool "IT7259 Kscan Driver"
-    default n
-    select I2C
-    select KSCAN
+    depends on I2C
     help
         Enable IT7259 kscan driver
+
+if IT7259
 
 config IT7259_CB_COUNT
     int "Maximum callback count"
     default 1
     help
         Maximum number of callbacks that can be registered
+
+endif # IT7259

@@ -1,0 +1,17 @@
+#ifndef DRIVERS_SENSOR_ICM42605_
+#define DRIVERS_SENSOR_ICM42605_
+
+#include <drivers/sensor.h>
+
+enum sensor_trigger_type_icm42605 {
+    SENSOR_TRIG_ICM42605_R2W = SENSOR_TRIG_PRIV_START,
+};
+
+enum sensor_channel_icm42605 {
+    SENSOR_CHAN_ICM42605_STEPS = SENSOR_CHAN_PRIV_START,
+
+    SENSOR_CHAN_ICM42605_SLEEP,
+    SENSOR_CHAN_ICM42605_WAKE,
+};
+
+#endif // DRIVERS_SENSOR_ICM42605_

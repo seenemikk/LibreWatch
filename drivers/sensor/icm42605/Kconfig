@@ -1,0 +1,9 @@
+menuconfig ICM42605_I2C
+    bool "ICM42605 6-Axis MEMS Motion Tracking Sensor"
+    depends on I2C
+    help
+      Enable ICM42605 6-Axis MEMS Motion Tracking Sensor
+
+if ICM42605_I2C
+
+endif # ICM42605_I2C

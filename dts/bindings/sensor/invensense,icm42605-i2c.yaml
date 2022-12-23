@@ -1,0 +1,17 @@
+description: ICM42605 6-Axis MEMS Motion Sensor
+
+compatible: "invensense,icm42605-i2c"
+
+include: [i2c-device.yaml]
+
+properties:
+    int1-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            Interrupt pin. Should be configured as active low.
+    int2-gpios:
+        type: phandle-array
+        required: true
+        description: |
+            Interrupt pin. Should be configured as active low.
