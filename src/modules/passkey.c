@@ -1,13 +1,13 @@
 #include <zephyr/kernel.h>
 
-#define MODULE ble_passkey
+#define MODULE passkey
 #include <caf/events/module_state_event.h>
 #include <caf/events/ble_common_event.h>
 
 #include "passkey_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_BLE_PASSKEY_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_PASSKEY_LOG_LEVEL);
 
 static atomic_t passkey_active = ATOMIC_INIT(false);
 
@@ -63,7 +63,7 @@ static struct bt_conn_auth_info_cb conn_auth_info_cb = {
     .pairing_failed = pairing_failed,
 };
 
-static void ble_passkey_init(void)
+static void passkey_init(void)
 {
     static bool initialized;
 
@@ -95,7 +95,7 @@ static bool app_event_handler(const struct app_event_header *aeh)
     if (is_module_state_event(aeh)) {
         struct module_state_event *event = cast_module_state_event(aeh);
 
-        if (check_state(event, MODULE_ID(ble_state), MODULE_STATE_READY)) ble_passkey_init();
+        if (check_state(event, MODULE_ID(ble_state), MODULE_STATE_READY)) passkey_init();
 
         return false;
     }

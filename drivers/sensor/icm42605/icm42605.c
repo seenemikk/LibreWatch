@@ -275,9 +275,8 @@ static int icm42605_channel_get(const struct device *dev, enum sensor_channel ch
 
 static int icm42605_trigger_set(const struct device *dev, const struct sensor_trigger *trig, sensor_trigger_handler_t handler)
 {
-    int ret = 0;
     struct icm42605_data *data = dev->data;
-    struct icm42605_config *config = dev->config;
+    const struct icm42605_config *config = dev->config;
 
     if (data->trigger_handler) return -ENOSPC;
     if (trig == NULL || handler == NULL) return -EINVAL;
