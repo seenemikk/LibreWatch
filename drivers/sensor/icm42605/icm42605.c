@@ -120,13 +120,15 @@ static void icm42605_work_handler(struct k_work *work)
 
     if (data->trigger_handler == NULL) goto end;
 
+    int16_t chan = data->trigger.chan;
+
     if (isr & INT_STATUS3_WAKE_INT) {
-        if (data->trigger.chan == SENSOR_CHAN_ALL || data->trigger.chan == SENSOR_CHAN_ICM42605_WAKE) {
+        if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_ICM42605_WAKE) {
             struct sensor_trigger trig = { .type = SENSOR_TRIG_ICM42605_R2W, SENSOR_CHAN_ICM42605_WAKE };
             data->trigger_handler(data->dev, &trig);
         }
     } else if (isr & INT_STATUS3_SLEEP_INT) {
-        if (data->trigger.chan == SENSOR_CHAN_ALL || data->trigger.chan == SENSOR_CHAN_ICM42605_SLEEP) {
+        if (chan == SENSOR_CHAN_ALL || chan == SENSOR_CHAN_ICM42605_SLEEP) {
             struct sensor_trigger trig = { .type = SENSOR_TRIG_ICM42605_R2W, SENSOR_CHAN_ICM42605_SLEEP };
             data->trigger_handler(data->dev, &trig);
         }
@@ -280,8 +282,12 @@ static int icm42605_trigger_set(const struct device *dev, const struct sensor_tr
 
     if (data->trigger_handler) return -ENOSPC;
     if (trig == NULL || handler == NULL) return -EINVAL;
-    if (trig->type != SENSOR_TRIG_ICM42605_R2W) return -ENOTSUP;
-    if (trig->chan != SENSOR_CHAN_ALL && trig->chan != SENSOR_CHAN_ICM42605_WAKE && trig->chan != SENSOR_CHAN_ICM42605_SLEEP) return -ENOTSUP;
+
+    int16_t type = trig->type;
+    int16_t chan = trig->chan;
+
+    if (type != SENSOR_TRIG_ICM42605_R2W) return -ENOTSUP;
+    if (chan != SENSOR_CHAN_ALL && chan != SENSOR_CHAN_ICM42605_WAKE && chan != SENSOR_CHAN_ICM42605_SLEEP) return -ENOTSUP;
 
     gpio_pin_interrupt_configure_dt(&config->int1_gpio, GPIO_INT_DISABLE);
 
