@@ -126,6 +126,7 @@ static void open_popup(enum ui_popup_type type)
 
     lv_scr_load_anim(popup->screen, LV_SCR_LOAD_ANIM_OVER_BOTTOM, POPUP_ANIM_SPEED, 0, false);
     ui.popups.active = popup->type;
+    send_wake_up();
 }
 
 static void init_popups(void)
@@ -310,6 +311,16 @@ static bool app_event_handler(const struct app_event_header *aeh)
         return false;
     }
 
+    if (is_ui_app_show_event(aeh)) {
+        handle_app_show(cast_ui_app_show_event(aeh));
+        return false;
+    }
+
+    if (is_ui_popup_show_event(aeh)) {
+        handle_popup_show(cast_ui_popup_show_event(aeh));
+        return false;
+    }
+
 #if IS_ENABLED(CONFIG_CAF_POWER_MANAGER)
 
     if (is_power_down_event(aeh)) {
@@ -319,16 +330,6 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
     if (is_wake_up_event(aeh)) {
         handle_wake_up(cast_wake_up_event(aeh));
-        return false;
-    }
-
-    if (is_ui_app_show_event(aeh)) {
-        handle_app_show(cast_ui_app_show_event(aeh));
-        return false;
-    }
-
-    if (is_ui_popup_show_event(aeh)) {
-        handle_popup_show(cast_ui_popup_show_event(aeh));
         return false;
     }
 
