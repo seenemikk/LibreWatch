@@ -1,7 +1,5 @@
 #define DT_DRV_COMPAT galaxycore_gc9a01a
 
-#include "gc9a01a.h"
-
 #include <zephyr/device.h>
 #include <zephyr/drivers/spi.h>
 #include <zephyr/drivers/gpio.h>
@@ -9,6 +7,8 @@
 #include <zephyr/pm/device.h>
 #include <zephyr/pm/device_runtime.h>
 #include <zephyr/sys/byteorder.h>
+
+#include "gc9a01a.h"
 
 #define LOG_LEVEL CONFIG_DISPLAY_LOG_LEVEL
 #include <zephyr/logging/log.h>

@@ -1,13 +1,13 @@
 #define DT_DRV_COMPAT ite_it7259
 
-#include "it7259.h"
-
 #include <zephyr/device.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/kscan.h>
 #include <zephyr/pm/device.h>
 #include <zephyr/pm/device_runtime.h>
+
+#include "it7259.h"
 
 #define LOG_LEVEL CONFIG_KSCAN_LOG_LEVEL
 #include <zephyr/logging/log.h>
