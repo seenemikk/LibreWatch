@@ -3,7 +3,6 @@ menu "CTS"
 config SMARTWATCH_CTS
     bool "Enable Current Time Service module"
     depends on CAF
-    depends on BT_CTS_CLIENT
     depends on DATE_TIME
     depends on !DATA_TIME_NTP
     help

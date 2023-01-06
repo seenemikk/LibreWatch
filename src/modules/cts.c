@@ -29,10 +29,12 @@ static struct k_work_delayable backup_work;
 
 #endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
 
-static struct bt_cts_client cts_c;
-
-// TODO add date_updated/data_update event
+// TODO add date_updated/date_update event
 // TODO is there a way to hook system reset, so we wouldn't need constant backups?
+
+#if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
+
+static struct bt_cts_client cts_c;
 
 static void cts_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time *current_time)
 {
@@ -97,6 +99,8 @@ static void discovery_start(struct bt_conn *conn)
     }
 }
 
+#endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)
+
 #if IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
 
 static void backup_timestamp_fn(struct k_work *work)
@@ -131,7 +135,7 @@ static void cts_init(void)
 
     k_work_init_delayable(&backup_work, backup_timestamp_fn);
     k_work_reschedule(&backup_work, K_SECONDS(CONFIG_SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS));
-#endif
+#endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
 
     struct tm *tm = gmtime(&timestamp);
     if (tm == NULL || (err = date_time_set(tm))) {
@@ -140,12 +144,14 @@ static void cts_init(void)
         return;
     }
 
+#if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
     err = bt_cts_client_init(&cts_c);
     if (err) {
         LOG_ERR("Failed initializing CTS client (%d)", err);
         module_set_state(MODULE_STATE_ERROR);
         return;
     }
+#endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)
 
     LOG_INF("CTS module initialized");
     module_set_state(MODULE_STATE_READY);
@@ -161,6 +167,7 @@ static bool app_event_handler(const struct app_event_header *aeh)
         return false;
     }
 
+#if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
     if (is_ble_peer_event(aeh)) {
         struct ble_peer_event *event = cast_ble_peer_event(aeh);
 
@@ -168,6 +175,7 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
         return false;
     }
+#endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)
 
     /* If event is unhandled, unsubscribe. */
     __ASSERT_NO_MSG(false);
@@ -177,4 +185,7 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
 APP_EVENT_LISTENER(MODULE, app_event_handler);
 APP_EVENT_SUBSCRIBE(MODULE, module_state_event);
+
+#if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
 APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event);
+#endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)
