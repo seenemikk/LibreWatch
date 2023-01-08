@@ -4,7 +4,6 @@ config SMARTWATCH_PASSKEY
     bool "Enable passkey module"
     depends on CAF
     depends on CAF_BLE_STATE
-    depends on SMARTWATCH_PASSKEY_EVENT
     help
       This module propagates ble passkey display information.
 

@@ -1,0 +1,28 @@
+menu "Sensors module"
+
+config SMARTWATCH_SENSORS
+    bool "Enable sensors module"
+    # depends on SMARTWATCH_SENSORS_EVENT
+    help
+      This module reads and forwards IMU's step count as events, and uses Raise to Wake to send power manager events.
+      TODO - write to step count ble characteristic.
+
+if SMARTWATCH_SENSORS
+
+config SMARTWATCH_SENSORS_FETCH_INTERVAL_FAST
+    int "How often sensor values are read when system is not suspended."
+    default 1000
+    range 1 60000
+
+config SMARTWATCH_SENSORS_FETCH_INTERVAL_SLOW
+    int "How often sensor values are read when system is suspended."
+    default 10000
+    range 1 60000
+
+module = SMARTWATCH_SENSORS
+module-str = sensors
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+
+endmenu

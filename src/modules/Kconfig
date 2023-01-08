@@ -1,2 +1,3 @@
 rsource "Kconfig.cts"
 rsource "Kconfig.passkey"
+rsource "Kconfig.sensors"
