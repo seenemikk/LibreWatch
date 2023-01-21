@@ -2,7 +2,7 @@ menu "UI"
 
 config SMARTWATCH_UI_UPDATE_INTERVAL_MS
     int
-    default 10
+    default 1
 
 module = SMARTWATCH_UI
 module-str = smartwatch_ui

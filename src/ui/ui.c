@@ -23,7 +23,6 @@ LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
 #define POPUP_ANIM_SPEED    200
 #define APP_ANIM_SPEED      200
 
-// TODO wakeup on new popup
 // TODO buzzer
 
 static const struct device *display = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
