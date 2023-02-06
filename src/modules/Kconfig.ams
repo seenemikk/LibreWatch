@@ -1,0 +1,21 @@
+menu "AMS"
+
+config SMARTWATCH_AMS
+    bool "Enable Apple Media Service module"
+    depends on CAF
+    depends on CAF_BLE_STATE
+    depends on BT_AMS_CLIENT
+
+config SMARTWATCH_AMS_MAX_STR_LEN
+    int "Maximum AMS artist and title string length"
+    default 100
+
+if SMARTWATCH_AMS
+
+module = SMARTWATCH_AMS
+module-str = ams
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+
+endmenu

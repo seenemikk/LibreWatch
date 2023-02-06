@@ -12,4 +12,8 @@ config SMARTWATCH_SENSORS_EVENT_INIT_LOG
     bool "Log sensors events"
     default y
 
+config SMARTWATCH_MEDIA_EVENT_INIT_LOG
+    bool "Log media player events"
+    default y
+
 endmenu
