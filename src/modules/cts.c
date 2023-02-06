@@ -36,13 +36,13 @@ static struct k_work_delayable backup_work;
 
 static struct bt_cts_client cts_c;
 
-static void cts_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time *current_time)
+static void update_time(struct bt_cts_current_time *current_time)
 {
     struct bt_cts_exact_time_256 *time = &current_time->exact_time_256;
 
     struct tm tm = {
         .tm_sec = time->seconds, .tm_min = time->minutes, .tm_hour = time->hours,
-        .tm_mday = time->day, .tm_mon = time->month, .tm_year = time->year - 1900
+        .tm_mday = time->day, .tm_mon = time->month - 1, .tm_year = time->year - 1900
     };
     int err = date_time_set(&tm);
     if (err) {
@@ -50,6 +50,21 @@ static void cts_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time *curr
     } else {
         LOG_INF("Time updated");
     }
+}
+
+static void cts_subscribe_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time *current_time)
+{
+    update_time(current_time);
+}
+
+static void cts_read_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time *current_time, int err)
+{
+    if (err) {
+        LOG_ERR("Failed to read current time characteristic (%d)", err);
+        return;
+    }
+
+    update_time(current_time);
 }
 
 static void discovery_completed_cb(struct bt_gatt_dm *dm, void *ctx)
@@ -62,9 +77,15 @@ static void discovery_completed_cb(struct bt_gatt_dm *dm, void *ctx)
         goto end;
     }
 
-    err = bt_cts_subscribe_current_time(&cts_c, cts_cb);
+    err = bt_cts_subscribe_current_time(&cts_c, cts_subscribe_cb);
     if (err) {
         LOG_ERR("Failed subscribing to CTS service (%d)", err);
+        goto end;
+    }
+
+    err = bt_cts_read_current_time(&cts_c, cts_read_cb);
+    if (err) {
+        LOG_ERR("Failed reading current time (%d)", err);
         goto end;
     }
 
