@@ -1,0 +1,20 @@
+menu "Discovery"
+
+config SMARTWATCH_DISCOVERY
+    bool "Enable BLE discovery module"
+    depends on CAF
+    depends on CAF_BLE_STATE
+    depends on BT_GATT_DM
+    help
+       This module discovers all specified central's services and propagates them as events.
+       This module is needed because only 1 discovery procedure can be running at the same time.
+
+if SMARTWATCH_DISCOVERY
+
+module = SMARTWATCH_DISCOVERY
+module-str = discovery
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+
+endmenu

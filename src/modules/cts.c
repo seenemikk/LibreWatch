@@ -1,15 +1,14 @@
 #include <zephyr/kernel.h>
 
-#include <zephyr/bluetooth/uuid.h>
 #include <bluetooth/services/cts_client.h>
-#include <bluetooth/gatt_dm.h>
 
 #include <time.h>
 #include <date_time.h>
 
 #define MODULE cts
 #include <caf/events/module_state_event.h>
-#include <caf/events/ble_common_event.h>
+
+#include "discovery_event.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_CTS_LOG_LEVEL);
@@ -67,56 +66,24 @@ static void cts_read_cb(struct bt_cts_client *cts_c, struct bt_cts_current_time 
     update_time(current_time);
 }
 
-static void discovery_completed_cb(struct bt_gatt_dm *dm, void *ctx)
+static void discovery_completed(struct bt_gatt_dm *dm)
 {
-    LOG_INF("CTS service found");
-
     int err = bt_cts_handles_assign(dm, &cts_c);
     if (err) {
         LOG_ERR("Could not assign CTS client handles (%d)", err);
-        goto end;
+        return;
     }
 
     err = bt_cts_subscribe_current_time(&cts_c, cts_subscribe_cb);
     if (err) {
         LOG_ERR("Failed subscribing to CTS service (%d)", err);
-        goto end;
+        return;
     }
 
     err = bt_cts_read_current_time(&cts_c, cts_read_cb);
     if (err) {
         LOG_ERR("Failed reading current time (%d)", err);
-        goto end;
-    }
-
-end:
-    err = bt_gatt_dm_data_release(dm);
-    if (err) {
-        LOG_ERR("Failed releasing discovery data (%d)", err);
-    }
-}
-
-static void discovery_service_not_found_cb(struct bt_conn *conn, void *ctx)
-{
-    LOG_WRN("CTS service not found");
-}
-
-static void discovery_error_found_cb(struct bt_conn *conn, int err, void *ctx)
-{
-    LOG_ERR("Discovery error (%d)", err);
-}
-
-static const struct bt_gatt_dm_cb discovery_cb = {
-    .completed = discovery_completed_cb,
-    .service_not_found = discovery_service_not_found_cb,
-    .error_found = discovery_error_found_cb,
-};
-
-static void discovery_start(struct bt_conn *conn)
-{
-    int err = bt_gatt_dm_start(conn, BT_UUID_CTS, &discovery_cb, NULL);
-    if (err) {
-        LOG_ERR("Failed to start CTS discovery (%d)", err);
+        return;
     }
 }
 
@@ -189,10 +156,10 @@ static bool app_event_handler(const struct app_event_header *aeh)
     }
 
 #if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
-    if (is_ble_peer_event(aeh)) {
-        struct ble_peer_event *event = cast_ble_peer_event(aeh);
+    if (is_discovery_event(aeh)) {
+        struct discovery_event *event = cast_discovery_event(aeh);
 
-        if (event->state == PEER_STATE_SECURED) discovery_start(event->id);
+        if (event->type == DISCOVERY_EVENT_CTS) discovery_completed(event->gatt_dm);
 
         return false;
     }
@@ -208,5 +175,5 @@ APP_EVENT_LISTENER(MODULE, app_event_handler);
 APP_EVENT_SUBSCRIBE(MODULE, module_state_event);
 
 #if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
-APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event);
+APP_EVENT_SUBSCRIBE(MODULE, discovery_event);
 #endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)

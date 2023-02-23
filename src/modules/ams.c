@@ -3,15 +3,14 @@
 
 #include <zephyr/kernel.h>
 
-#include <zephyr/bluetooth/uuid.h>
 #include <bluetooth/services/ams_client.h>
-#include <bluetooth/gatt_dm.h>
 
 #define MODULE ams
 #include <caf/events/module_state_event.h>
 #include <caf/events/ble_common_event.h>
 
 #include "media_event.h"
+#include "discovery_event.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_AMS_LOG_LEVEL);
@@ -206,62 +205,30 @@ static void ams_write_cb(struct bt_ams_client *ams_c, uint8_t err)
     init_entity_update();
 }
 
-static void discovery_completed_cb(struct bt_gatt_dm *dm, void *ctx)
+static void discovery_completed(struct bt_gatt_dm *dm)
 {
-    LOG_INF("AMS service found");
-
     bt_ams_client_init(&ams_c);
     atomic_set(&ams_flags, 0);
 
     int err = bt_ams_handles_assign(dm, &ams_c);
     if (err) {
         LOG_ERR("Could not assign AMS client handles (%d)", err);
-        goto end;
+        return;
     }
 
     err = bt_ams_subscribe_remote_command(&ams_c, ams_rc_cb);
     if (err) {
         LOG_ERR("Failed to subscribe to remote command (%d)", err);
-        goto end;
+        return;
     }
 
     err = bt_ams_subscribe_entity_update(&ams_c, ams_eu_cb);
     if (err) {
         LOG_ERR("Failed to subscribe to entity update (%d)", err);
-        goto end;
+        return;
     }
 
     init_entity_update();
-
-end:
-    err = bt_gatt_dm_data_release(dm);
-    if (err) {
-        LOG_ERR("Failed releasing discovery data (%d)", err);
-    }
-}
-
-static void discovery_service_not_found_cb(struct bt_conn *conn, void *ctx)
-{
-    LOG_WRN("AMS service not found");
-}
-
-static void discovery_error_found_cb(struct bt_conn *conn, int err, void *ctx)
-{
-    LOG_ERR("Discovery error (%d)", err);
-}
-
-static const struct bt_gatt_dm_cb discovery_cb = {
-    .completed = discovery_completed_cb,
-    .service_not_found = discovery_service_not_found_cb,
-    .error_found = discovery_error_found_cb,
-};
-
-static void discovery_start(struct bt_conn *conn)
-{
-    int err = bt_gatt_dm_start(conn, BT_UUID_AMS, &discovery_cb, NULL);
-    if (err) {
-        LOG_ERR("Failed to start AMS discovery (%d)", err);
-    }
 }
 
 static void init(void)
@@ -284,28 +251,22 @@ static void handle_media_command_event(struct media_command_event *evt)
     }
 }
 
-static void handle_ble_peer_event(struct ble_peer_event *event)
+static void handle_ble_peer_event(struct ble_peer_event *evt)
 {
-    switch (event->state) {
-        case PEER_STATE_SECURED: {
-            discovery_start(event->id);
-            break;
-        }
+    if (evt->state != PEER_STATE_DISCONNECTED) return;
 
-        case PEER_STATE_DISCONNECTED: {
-            struct media_player_event *event = new_media_player_event();
-            event->elapsed_time = 0;
-            event->playback_rate = 0;
-            event->timestamp = k_uptime_get();
-            event->state = MEDIA_PLAYER_STATE_DISCONNECTED;
-            APP_EVENT_SUBMIT(event);
-            break;
-        }
+    struct media_player_event *event = new_media_player_event();
+    event->elapsed_time = 0;
+    event->playback_rate = 0;
+    event->timestamp = k_uptime_get();
+    event->state = MEDIA_PLAYER_STATE_DISCONNECTED;
+    APP_EVENT_SUBMIT(event);
+}
 
-        default: {
-            break;
-        }
-    }
+static void handle_discovery_event(struct discovery_event *event)
+{
+    if (event->type != DISCOVERY_EVENT_AMS) return;
+    discovery_completed(event->gatt_dm);
 }
 
 static bool app_event_handler(const struct app_event_header *aeh)
@@ -318,6 +279,11 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
     if (is_ble_peer_event(aeh)) {
         handle_ble_peer_event(cast_ble_peer_event(aeh));
+        return false;
+    }
+
+    if (is_discovery_event(aeh)) {
+        handle_discovery_event(cast_discovery_event(aeh));
         return false;
     }
 
@@ -334,5 +300,6 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
 APP_EVENT_LISTENER(MODULE, app_event_handler);
 APP_EVENT_SUBSCRIBE(MODULE, module_state_event);
-APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event);
+APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event_event);
+APP_EVENT_SUBSCRIBE(MODULE, discovery_event);
 APP_EVENT_SUBSCRIBE(MODULE, media_command_event);

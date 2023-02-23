@@ -16,4 +16,8 @@ config SMARTWATCH_MEDIA_EVENT_INIT_LOG
     bool "Log media player events"
     default y
 
+config SMARTWATCH_DISCOVERY_EVENT_INIT_LOG
+    bool "Log discovery events"
+    default y
+
 endmenu
