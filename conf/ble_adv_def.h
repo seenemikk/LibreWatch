@@ -9,9 +9,7 @@ static const struct bt_data ad_unbonded[] = {
     BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE,
                  (CONFIG_BT_DEVICE_APPEARANCE & BIT_MASK(__CHAR_BIT__)),
                  (CONFIG_BT_DEVICE_APPEARANCE >> __CHAR_BIT__)),
-// #if IS_ENABLED(CONFIG_SMARTWATCH_AMS)
     BT_DATA_BYTES(BT_DATA_SOLICIT128, BT_UUID_AMS_VAL),
-// #endif // IS_ENABLED(CONFIG_SMARTWATCH_AMS)
 };
 
 static const struct bt_data ad_bonded[] = {
@@ -19,9 +17,7 @@ static const struct bt_data ad_bonded[] = {
     BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE,
                  (CONFIG_BT_DEVICE_APPEARANCE & BIT_MASK(__CHAR_BIT__)),
                  (CONFIG_BT_DEVICE_APPEARANCE >> __CHAR_BIT__)),
-// #if IS_ENABLED(CONFIG_SMARTWATCH_AMS)
     BT_DATA_BYTES(BT_DATA_SOLICIT128, BT_UUID_AMS_VAL),
-// #endif // IS_ENABLED(CONFIG_SMARTWATCH_AMS)
 };
 
 static const struct bt_data sd[] = {};
