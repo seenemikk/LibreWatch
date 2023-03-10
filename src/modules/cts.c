@@ -29,7 +29,7 @@ static struct k_work_delayable backup_work;
 #endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
 
 // TODO add date_updated/date_update event
-// TODO is there a way to hook system reset, so we wouldn't need constant backups?
+// TODO is there a way to hook system reset, so we wouldn't need constant backups? Maybe mcumgr os reset hook?
 
 #if IS_ENABLED(CONFIG_BT_CTS_CLIENT)
 

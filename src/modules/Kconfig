@@ -1,5 +1,6 @@
 rsource "Kconfig.cts"
 rsource "Kconfig.ams"
+rsource "Kconfig.ancs"
 rsource "Kconfig.passkey"
 rsource "Kconfig.sensors"
 rsource "Kconfig.discovery"

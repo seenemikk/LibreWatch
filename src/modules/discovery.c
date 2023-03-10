@@ -3,6 +3,7 @@
 #include <zephyr/bluetooth/uuid.h>
 #include <bluetooth/services/cts_client.h>
 #include <bluetooth/services/ams_client.h>
+#include <bluetooth/services/ancs_client.h>
 #include <bluetooth/gatt_dm.h>
 
 #define MODULE discovery
@@ -15,18 +16,23 @@
 LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_DISCOVERY_LOG_LEVEL);
 
 // TODO how to handle errors?
+// TODO subscribe to GATT service changed and rediscover if changed?
 
 static uint8_t state;
 static struct bt_conn *cur_conn;
 
 static const struct bt_uuid *type_to_uuid[DISCOVERY_EVENT_COUNT] = {
-    [DISCOVERY_EVENT_AMS] = BT_UUID_AMS,
+    [DISCOVERY_EVENT_GATT] = BT_UUID_GATT,
     [DISCOVERY_EVENT_CTS] = BT_UUID_CTS,
+    [DISCOVERY_EVENT_AMS] = BT_UUID_AMS,
+    [DISCOVERY_EVENT_ANCS] = BT_UUID_ANCS,
 };
 
 static const char *type_to_str[DISCOVERY_EVENT_COUNT] = {
-    [DISCOVERY_EVENT_AMS] = "AMS",
+    [DISCOVERY_EVENT_GATT] = "GATT",
     [DISCOVERY_EVENT_CTS] = "CTS",
+    [DISCOVERY_EVENT_AMS] = "AMS",
+    [DISCOVERY_EVENT_ANCS] = "ANCS",
 };
 
 static void discovery_next(void);

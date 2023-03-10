@@ -261,6 +261,8 @@ static void handle_ble_peer_event(struct ble_peer_event *evt)
     event->timestamp = k_uptime_get();
     event->state = MEDIA_PLAYER_STATE_DISCONNECTED;
     APP_EVENT_SUBMIT(event);
+
+    bt_ams_client_init(&ams_c);
 }
 
 static void handle_discovery_event(struct discovery_event *event)

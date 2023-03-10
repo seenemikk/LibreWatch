@@ -5,7 +5,7 @@ config SMARTWATCH_SENSORS
     # depends on SMARTWATCH_SENSORS_EVENT
     help
       This module reads and forwards IMU's step count as events, and uses Raise to Wake to send power manager events.
-      TODO - write to step count ble characteristic.
+      TODO - write to step count ble characteristic and reset step counter when new day begins.
 
 if SMARTWATCH_SENSORS
 
