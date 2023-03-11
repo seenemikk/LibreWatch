@@ -22,6 +22,7 @@ enum work_state_type {
     WORK_STATE_NONE,
     WORK_STATE_TIMEOUT,
     WORK_STATE_REQUEST,
+    WORK_STATE_PERFORM_ACTION,
 };
 
 static uint8_t notif_attributes[] = {
@@ -34,19 +35,24 @@ static uint8_t app_attributes[] = {
     BT_ANCS_APP_ATTR_ID_DISPLAY_NAME,
 };
 
+// TODO this module sucks, make it better. You can't perform notification actions when attribute request is active.
+
 static sys_slist_t notif_queue = SYS_SLIST_STATIC_INIT(&notification_queue);
 static size_t notif_queue_len;
-K_MUTEX_DEFINE(notif_queue_mutex);
 
 static uint8_t attr_buffer[MAX(CONFIG_SMARTWATCH_ANCS_MAX_TITLE_SIZE, CONFIG_SMARTWATCH_ANCS_MAX_MESSAGE_SIZE)];
+static K_MUTEX_DEFINE(lock);
 static struct bt_ancs_client ancs_c;
 
 static enum work_state_type work_state;
+static uint32_t action_uid;
+static uint8_t action_type;
 static void work_cb(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(work, work_cb);
 
 static void request_notif_attributes(void);
 static void start_timeout_counter(void);
+static void perform_notif_action(uint32_t uid, uint8_t action);
 static void write_cb(struct bt_ancs_client *ancs_c, uint8_t err);
 
 static struct notification_event *get_notif_from_node(sys_snode_t *node)
@@ -58,7 +64,7 @@ static struct notification_event *get_notif_from_node(sys_snode_t *node)
 
 static struct notification_event *get_notif_head(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     sys_snode_t *node = sys_slist_get(&notif_queue);
     struct notification_event *notif = get_notif_from_node(node);
@@ -70,39 +76,39 @@ static struct notification_event *get_notif_head(void)
         }
     }
 
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
     return notif;
 }
 
 static struct notification_event *peek_notif_head(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     sys_snode_t *node = sys_slist_peek_head(&notif_queue);
     struct notification_event *notif = get_notif_from_node(node);
 
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
     return notif;
 }
 
 static void free_notif_head(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     struct notification_event *event = get_notif_head();
     app_event_manager_free(event);
 
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
 }
 
 static void free_notifications(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     struct notification_event *notif = NULL;
     while ((notif = get_notif_head()) != NULL) app_event_manager_free(notif);
 
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
 }
 
 static void append_notif(const struct bt_ancs_evt_notif *notif)
@@ -118,7 +124,7 @@ static void append_notif(const struct bt_ancs_evt_notif *notif)
     event->pending_app_attributes = APP_ATTR_COUNT;
     event->pending_notif_attributes = NOTIF_ATTR_COUNT;
 
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     if (notif_queue_len < CONFIG_SMARTWATCH_ANCS_MAX_NOTIFICATIONS) {
         sys_slist_append(&notif_queue, &event->header.node);
@@ -128,7 +134,7 @@ static void append_notif(const struct bt_ancs_evt_notif *notif)
         app_event_manager_free(event);
     }
 
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
 }
 
 static void send_notif(void)
@@ -139,8 +145,6 @@ static void send_notif(void)
 
 static void work_state_request(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
-
     struct notification_event *notif = NULL;
     while ((notif = peek_notif_head()) != NULL) {
         if (notif->info.evt_id != BT_ANCS_EVENT_ID_NOTIFICATION_REMOVED &&
@@ -149,13 +153,13 @@ static void work_state_request(void)
         }
         send_notif();
     }
-    if (notif == NULL) goto unlock;
+    if (notif == NULL) return;
 
     int err = 0;
     if (notif->pending_notif_attributes == 0) {
         err = bt_ancs_request_app_attr(&ancs_c, notif->app_id, strlen(notif->app_id), write_cb);
     } else {
-        if (notif->pending_notif_attributes != NOTIF_ATTR_COUNT) goto unlock;
+        if (notif->pending_notif_attributes != NOTIF_ATTR_COUNT) return;
         err = bt_ancs_request_attrs(&ancs_c, &notif->info, write_cb);
     }
 
@@ -166,12 +170,10 @@ static void work_state_request(void)
             free_notif_head();
             request_notif_attributes();
         }
-        goto unlock;
+        return;
     }
 
     start_timeout_counter();
-unlock:
-    k_mutex_unlock(&notif_queue_mutex);
 }
 
 static void work_state_timeout(void)
@@ -181,8 +183,21 @@ static void work_state_timeout(void)
     request_notif_attributes();
 }
 
+static void notification_action_cb(struct bt_ancs_client *ancs_c, uint8_t err)
+{
+    request_notif_attributes();
+}
+
+static void work_state_perform_action(void)
+{
+    int ret = bt_ancs_notification_action(&ancs_c, action_uid, action_type, notification_action_cb);
+    if (ret == -EBUSY) perform_notif_action(action_uid, action_type);
+}
+
 static void work_cb(struct k_work *work)
 {
+    k_mutex_lock(&lock, K_FOREVER);
+
     int state = work_state;
     work_state = WORK_STATE_NONE;
 
@@ -197,16 +212,23 @@ static void work_cb(struct k_work *work)
             break;
         }
 
+        case WORK_STATE_PERFORM_ACTION: {
+            work_state_perform_action();
+            break;
+        }
+
         case WORK_STATE_NONE:
         default: {
             LOG_ERR("Invalid work state");
         }
     }
+
+    k_mutex_unlock(&lock);
 }
 
 static void request_notif_attributes(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     if (work_state != WORK_STATE_NONE) goto unlock;
 
@@ -220,12 +242,12 @@ static void request_notif_attributes(void)
     }
 
 unlock:
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
 }
 
 static void start_timeout_counter(void)
 {
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     if (work_state != WORK_STATE_NONE) goto unlock;
 
@@ -233,7 +255,24 @@ static void start_timeout_counter(void)
     work_state = WORK_STATE_TIMEOUT;
 
 unlock:
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
+}
+
+static void perform_notif_action(uint32_t uid, uint8_t action)
+{
+    if (action >= NOTIFICATION_ACTION_COUNT) return;
+
+    k_mutex_lock(&lock, K_FOREVER);
+
+    if (work_state != WORK_STATE_NONE) goto unlock;
+
+    k_work_reschedule(&work, K_NO_WAIT);
+    work_state = WORK_STATE_PERFORM_ACTION;
+    action_uid = uid;
+    action_type = action;
+
+unlock:
+    k_mutex_unlock(&lock);
 }
 
 static void write_cb(struct bt_ancs_client *ancs_c, uint8_t err)
@@ -279,7 +318,7 @@ static void data_source_cb(struct bt_ancs_client *ancs, const struct bt_ancs_att
 {
     k_work_cancel_delayable(&work);
 
-    k_mutex_lock(&notif_queue_mutex, K_FOREVER);
+    k_mutex_lock(&lock, K_FOREVER);
 
     work_state = WORK_STATE_NONE;
 
@@ -362,7 +401,7 @@ static void data_source_cb(struct bt_ancs_client *ancs, const struct bt_ancs_att
 request:
     request_notif_attributes();
 unlock:
-    k_mutex_unlock(&notif_queue_mutex);
+    k_mutex_unlock(&lock);
 }
 
 static void init(void)
@@ -424,6 +463,11 @@ static void handle_discovery_event(struct discovery_event *event)
     discovery_completed(event->gatt_dm);
 }
 
+static void handle_notification_action_event(struct notification_action_event *event)
+{
+    perform_notif_action(event->uid, event->action);
+}
+
 static bool app_event_handler(const struct app_event_header *aeh)
 {
     if (is_ble_peer_event(aeh)) {
@@ -436,6 +480,11 @@ static bool app_event_handler(const struct app_event_header *aeh)
         return false;
     }
 
+    if (is_notification_action_event(aeh)) {
+        handle_notification_action_event(cast_notification_action_event(aeh));
+        return false;
+    }
+
     /* If event is unhandled, unsubscribe. */
     __ASSERT_NO_MSG(false);
 
@@ -445,3 +494,4 @@ static bool app_event_handler(const struct app_event_header *aeh)
 APP_EVENT_LISTENER(MODULE, app_event_handler);
 APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event_event);
 APP_EVENT_SUBSCRIBE(MODULE, discovery_event);
+APP_EVENT_SUBSCRIBE(MODULE, notification_action_event);

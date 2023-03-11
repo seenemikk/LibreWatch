@@ -11,6 +11,12 @@ enum notification_type {
     NOTIFICATION_REMOVED,
 };
 
+enum notification_action_type {
+    NOTIFICATION_ACTION_POSITIVE,
+    NOTIFICATION_ACTION_NEGATIVE,
+    NOTIFICATION_ACTION_COUNT,
+};
+
 enum notification_category_type {
     NOTIFICATION_CATEGORY_OTHER,
     NOTIFICATION_CATEGORY_INCOMING_CALL,
@@ -42,4 +48,12 @@ struct notification_event {
     uint8_t pending_app_attributes;
 };
 
+struct notification_action_event {
+    struct app_event_header header;
+
+    uint32_t uid;
+    uint8_t action; // enum notification_action_type
+};
+
 APP_EVENT_TYPE_DECLARE(notification_event);
+APP_EVENT_TYPE_DECLARE(notification_action_event);
