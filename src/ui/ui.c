@@ -73,6 +73,7 @@ static void send_wake_up(void)
 static void close_popup(enum ui_popup_type type)
 {
     __ASSERT_NO_MSG(type < UI_POPUP_COUNT);
+    if (type >= UI_POPUP_COUNT) return;
 
     struct ui_popup *popup = ui.popups.arr[type];
     if (popup == NULL || popup->screen == NULL) return;
@@ -107,6 +108,7 @@ static void popup_event(lv_event_t *evt)
 static void open_popup(enum ui_popup_type type)
 {
     __ASSERT_NO_MSG(type < UI_POPUP_COUNT);
+    if (type >= UI_POPUP_COUNT) return;
 
     struct ui_popup *popup = ui.popups.arr[type];
     if (popup == NULL || popup->screen != NULL) return;
@@ -148,6 +150,7 @@ static void app_event(lv_event_t *evt);
 static void open_app(enum ui_app_type type, lv_scr_load_anim_t anim)
 {
     __ASSERT_NO_MSG(type < UI_APP_COUNT);
+    if (type >= UI_POPUP_COUNT) return;
 
     struct ui_app *app = ui.apps.arr[type];
     struct ui_app *prev_app = ui.apps.active < UI_APP_COUNT ? ui.apps.arr[ui.apps.active] : NULL;

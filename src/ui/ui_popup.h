@@ -6,6 +6,7 @@
 // Order counts. Types with lower values have higher priority.
 enum ui_popup_type {
     UI_POPUP_PASSKEY,
+    UI_POPUP_CALL,
     UI_POPUP_NOTIFICATION,
     UI_POPUP_COUNT,
 };

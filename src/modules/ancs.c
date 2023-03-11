@@ -343,7 +343,6 @@ static void data_source_cb(struct bt_ancs_client *ancs, const struct bt_ancs_att
             switch (response->attr.attr_id) {
                 case BT_ANCS_NOTIF_ATTR_ID_APP_IDENTIFIER: {
                     snprintk(notif->app_id, MIN(sizeof(notif->app_id), response->attr.attr_len + 1), "%s", response->attr.attr_data);
-                    LOG_ERR("APP ID %s", notif->app_id);
 
                     // If we request app attributes and the app id in the response doesn't fit into response->app_id
                     // then the response is ignored and we don't receive data source callback - ancs_attr_parser.c : app_id_parse
@@ -356,13 +355,11 @@ static void data_source_cb(struct bt_ancs_client *ancs, const struct bt_ancs_att
 
                 case BT_ANCS_NOTIF_ATTR_ID_TITLE: {
                     snprintk(notif->title, MIN(sizeof(notif->title), response->attr.attr_len + 1), "%s", response->attr.attr_data);
-                    LOG_ERR("TITLE %s", notif->title);
                     break;
                 }
 
                 case BT_ANCS_NOTIF_ATTR_ID_MESSAGE: {
                     snprintk(notif->message, MIN(sizeof(notif->message), response->attr.attr_len + 1), "%s", response->attr.attr_data);
-                    LOG_ERR("MESSAGE %s", notif->message);
                     break;
                 }
 
@@ -388,7 +385,6 @@ static void data_source_cb(struct bt_ancs_client *ancs, const struct bt_ancs_att
             }
 
             snprintk(notif->app_name, MIN(sizeof(notif->app_name), response->attr.attr_len + 1), "%s", response->attr.attr_data);
-            LOG_ERR("APP NAME %s", notif->app_name);
             notif->pending_app_attributes = 0;
             break;
         }
