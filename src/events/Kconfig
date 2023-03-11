@@ -24,4 +24,8 @@ config SMARTWATCH_NOTIFICATION_EVENT_INIT_LOG
     bool "Log notification events"
     default y
 
+config SMARTWATCH_DFU_EVENT_INIT_LOG
+    bool "Log notification events"
+    default y
+
 endmenu

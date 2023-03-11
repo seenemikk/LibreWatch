@@ -1,0 +1,20 @@
+menu "Device Firmware Update"
+
+config SMARTWATCH_DFU
+    bool "Enable Device Firmware Update module"
+    depends on CAF_BLE_STATE
+	depends on MCUMGR_CMD_IMG_MGMT
+	depends on MCUMGR_SMP_BT
+	depends on BOOTLOADER_MCUBOOT
+    help
+       This module registers mcumgr image manager and sends dfu_status events.
+
+if SMARTWATCH_DFU
+
+module = SMARTWATCH_DFU
+module-str = dfu
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+
+endmenu
