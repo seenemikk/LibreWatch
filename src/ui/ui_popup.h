@@ -21,6 +21,7 @@ struct ui_popup {
     enum ui_popup_type type;
     const struct ui_popup_api *api;
     lv_obj_t *screen;
+    bool persistent;    // if true, then user can't close the popup
 };
 
 #define UI_POPUP_DEFINE(_type, _api) \
@@ -28,6 +29,15 @@ struct ui_popup {
         .type = _type, \
         .api = _api, \
         .screen = NULL, \
+        .persistent = false, \
+    }
+
+#define UI_POPUP_PERSISTENT_DEFINE(_type, _api) \
+    STRUCT_SECTION_ITERABLE(ui_popup, _CONCAT(ui_popup_, _type)) = { \
+        .type = _type, \
+        .api = _api, \
+        .screen = NULL, \
+        .persistent = true, \
     }
 
 #define UI_POPUP_OPEN(_type) \

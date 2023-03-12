@@ -118,7 +118,7 @@ static void open_popup(enum ui_popup_type type)
         LOG_ERR("Failed creating new popup");
         return;
     }
-    lv_obj_add_event_cb(popup->screen, popup_event, LV_EVENT_GESTURE, NULL);
+    if (!popup->persistent) lv_obj_add_event_cb(popup->screen, popup_event, LV_EVENT_GESTURE, NULL);
 
     popup->api->init(popup->screen);
 
