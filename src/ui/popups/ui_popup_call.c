@@ -121,8 +121,10 @@ static void handle_notification_event(struct notification_event *event)
     uint8_t cur_category = cur_notif.info.category_id;
     uint8_t evt_category = event->info.category_id;
 
-    if ((uint8_t)event->info.evt_id == NOTIFICATION_REMOVED && event->info.notif_uid == cur_notif.info.notif_uid) {
-        UI_POPUP_CLOSE(UI_POPUP_CALL);
+    if ((uint8_t)event->info.evt_id == NOTIFICATION_REMOVED) {
+        if (event->info.notif_uid == cur_notif.info.notif_uid) {
+            UI_POPUP_CLOSE(UI_POPUP_CALL);
+        }
         return;
     }
 
