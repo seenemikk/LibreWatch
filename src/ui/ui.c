@@ -2,14 +2,13 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/display.h>
 #include <zephyr/drivers/kscan.h>
+#include <zephyr/pm/device.h>
 #include <zephyr/pm/device_runtime.h>
 
 #define MODULE ui
 #include <app_event_manager.h>
 #include <caf/events/module_state_event.h>
 #include <caf/events/power_event.h>
-
-#include <zephyr/pm/device.h>
 
 #include "lvgl.h"
 
@@ -21,7 +20,14 @@
 LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
 
 #define POPUP_ANIM_SPEED    200
-#define APP_ANIM_SPEED      200
+#define APP_ANIM_SPEED      100
+
+#define INACTIVE_DOT_DIAMETER   6
+#define ACTIVE_DOT_DIAMETER     10
+#define INACTIVE_DOT_COLOR      0x393839
+#define ACTIVE_DOT_COLOR        0xffffff
+#define DOT_ANGLE               10  // Must be even
+#define DOT_DISTANCE            108
 
 // TODO buzzer
 
@@ -37,6 +43,7 @@ struct ui {
     struct {
         struct ui_app *arr[UI_APP_COUNT];
         int active;
+        uint8_t count;
     } apps;
 
     struct k_work_delayable work;
@@ -54,6 +61,36 @@ static void queue_ui_task(void)
 static void cancel_ui_task(void)
 {
     k_work_cancel_delayable(&ui.work);
+}
+
+static void init_menu_dots(struct ui_app *app)
+{
+    __ASSERT_NO_MSG(ui.apps.count > 0 && app && app->screen);
+
+    uint32_t deg = 270 - (ui.apps.count - 1) * DOT_ANGLE / 2;
+    for (uint8_t i = 0; i < ui.apps.count; i++) {
+        uint8_t diameter = 0;
+        uint32_t color = 0;
+        if (i == app->type) {
+            diameter = ACTIVE_DOT_DIAMETER;
+            color = ACTIVE_DOT_COLOR;
+        } else {
+            diameter = INACTIVE_DOT_DIAMETER;
+            color = INACTIVE_DOT_COLOR;
+        }
+        lv_coord_t x = lv_trigo_cos(deg) * DOT_DISTANCE / INT16_MAX;
+        lv_coord_t y = -lv_trigo_sin(deg) * DOT_DISTANCE / INT16_MAX;
+
+        lv_obj_t *dot = lv_obj_create(app->screen);
+        lv_obj_set_size(dot, diameter, diameter);
+        lv_obj_set_pos(dot, x, y);
+        lv_obj_set_align(dot, LV_ALIGN_CENTER);
+        lv_obj_set_style_radius(dot, 90, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(dot, lv_color_hex(color), LV_PART_MAIN);
+        lv_obj_set_style_border_width(dot, 0, LV_PART_MAIN);
+
+        deg += DOT_ANGLE;
+    }
 }
 
 static void ui_task(struct k_work *work)
@@ -161,6 +198,7 @@ static void open_app(enum ui_app_type type, lv_scr_load_anim_t anim)
         LOG_ERR("Failed creating a screen for an app");
         return;
     }
+    init_menu_dots(app);
     lv_obj_add_event_cb(app->screen, app_event, LV_EVENT_GESTURE, NULL);
 
     app->api->init(app->screen);
@@ -209,6 +247,7 @@ static void init_apps(void)
         }
 
         ui.apps.arr[app->type] = app;
+        ui.apps.count++;
     }
 
     enum ui_app_type type = 0;
