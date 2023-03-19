@@ -5,6 +5,8 @@
 #include <zephyr/pm/device.h>
 #include <zephyr/pm/device_runtime.h>
 
+#include "date_time.h"
+
 #define MODULE ui
 #include <app_event_manager.h>
 #include <caf/events/module_state_event.h>
@@ -14,6 +16,7 @@
 
 #include "ui_popup.h"
 #include "ui_app.h"
+#include "ui_assets.h"
 #include "ui_event.h"
 
 #include <zephyr/logging/log.h>
@@ -93,8 +96,40 @@ static void init_menu_dots(struct ui_app *app)
     }
 }
 
+static void init_time_label(struct ui_app *app)
+{
+    __ASSERT_NO_MSG(app && app->screen);
+    if (app->type == UI_APP_HOME) return;
+
+    lv_obj_t *label_time = lv_label_create(app->screen);
+    lv_obj_set_pos(label_time, 0, -100);
+    lv_obj_set_align(label_time, LV_ALIGN_CENTER);
+    lv_obj_set_style_text_align(label_time, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_time, &ui_assets_chivo_mono_14, LV_PART_MAIN);
+}
+
+static void update_time_label(void)
+{
+    if (ui.popups.active != UI_POPUP_COUNT || ui.apps.active == UI_APP_HOME) return;
+
+    lv_obj_t *screen = ui.apps.arr[ui.apps.active]->screen;
+    if (screen == NULL) return;
+    lv_obj_t *label_time = lv_obj_get_child(screen, 0);
+    if (label_time == NULL) return;
+
+    int64_t msec = 0;
+    if (date_time_now(&msec) != 0) return;
+
+    time_t sec = msec / 1000;
+    struct tm *tm = gmtime(&sec);
+    if (tm == NULL) return;
+
+    lv_label_set_text_fmt(label_time, "%02d:%02d", tm->tm_hour, tm->tm_min);
+}
+
 static void ui_task(struct k_work *work)
 {
+    update_time_label();
     lv_task_handler();
     queue_ui_task();
 }
@@ -198,6 +233,7 @@ static void open_app(enum ui_app_type type)
         LOG_ERR("Failed creating a screen for an app");
         return;
     }
+    init_time_label(app);   // No widget should be created before this function call, because we rely on time label being the first child.
     init_menu_dots(app);
     lv_obj_add_event_cb(app->screen, app_event, LV_EVENT_GESTURE, NULL);
 

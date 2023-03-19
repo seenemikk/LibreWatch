@@ -22,6 +22,7 @@ zephyr_include_directories(conf)
 zephyr_library_include_directories(
   src/events
   src/ui
+  src/ui/assets
 )
 
 add_subdirectory(src/modules)
