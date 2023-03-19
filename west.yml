@@ -18,7 +18,7 @@ manifest:
         revision: v2.0.2-smartwatch
       - name: zephyr
         repo-path: sdk-zephyr
-        revision: v3.0.99-ncs1-1
+        revision: v3.0.99-ncs1-smartwatch
         import:
             name-allowlist:
               - cmsis

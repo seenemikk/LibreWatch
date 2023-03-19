@@ -265,6 +265,7 @@ static int gc9a01a_init(const struct device *dev)
         LOG_ERR("SPI not ready");
         return -ENODEV;
     }
+    pm_device_runtime_get(config->bus.bus);
 
     ret = pm_device_runtime_enable(dev);
     if ((ret != 0) && (ret != -ENOSYS)) {
@@ -317,8 +318,11 @@ static int gc9a01a_init(const struct device *dev)
 
 static int gc9a01a_pm_action(const struct device *dev, enum pm_device_action action)
 {
+    const struct gc9a01a_config *config = dev->config;
+
     switch (action) {
         case PM_DEVICE_ACTION_RESUME: {
+            pm_device_runtime_get(config->bus.bus);
             gc9a01a_sleep_out(dev);
             gc9a01a_blanking_off(dev);
             break;
@@ -327,6 +331,7 @@ static int gc9a01a_pm_action(const struct device *dev, enum pm_device_action act
         case PM_DEVICE_ACTION_SUSPEND: {
             gc9a01a_blanking_on(dev);
             gc9a01a_sleep_in(dev);
+            pm_device_runtime_put(config->bus.bus);
             break;
         }
 
