@@ -1,0 +1,37 @@
+menu "BLE Connection Parameters Module"
+
+config SMARTWATCH_BT_CONN_PARAMS
+    bool "Enable BLE Connection Paramters module"
+    depends on CAF_BLE_STATE
+    help
+        This module updates the BLE connection parameters.
+
+if SMARTWATCH_BT_CONN_PARAMS
+
+config SMARTWATCH_BT_CONN_PARAMS_INT_MIN
+    int "Minimum connection interval (N * 1.25 milliseconds)"
+    range 12 3200
+    default 24 # 30 ms
+
+config SMARTWATCH_BT_CONN_PARAMS_INT_MAX
+    int "Maximum connection interval (N * 1.25 milliseconds)"
+    range 12 3200
+    default 48 # 60 ms
+
+config SMARTWATCH_BT_CONN_PARAMS_LATENCY
+    int "Slave latency"
+    range 0 30
+    default 0
+
+config SMARTWATCH_BT_CONN_PARAMS_TIMEOUT
+    int "Supervision timeout (N * 10 milliseconds)"
+    range 200 600
+    default 400 # 4000 ms
+
+module = SMARTWATCH_BT_CONN_PARAMS
+module-str = bt_conn_params
+source "subsys/logging/Kconfig.template.log_config"
+
+endif
+
+endmenu

@@ -51,17 +51,23 @@ static void deinit_conn(void)
     cur_conn = NULL;
 }
 
+static void send_event(struct bt_gatt_dm *dm, uint8_t type)
+{
+    struct discovery_event *event = new_discovery_event();
+    if (event == NULL) return;
+
+    event->gatt_dm = dm;
+    event->type = type;
+    APP_EVENT_SUBMIT(event);
+
+}
+
 static void discovery_completed_cb(struct bt_gatt_dm *dm, void *ctx)
 {
     __ASSERT_NO_MSG(state < DISCOVERY_EVENT_COUNT);
 
     LOG_INF("%s service found", type_to_str[state]);
-
-    struct discovery_event *event = new_discovery_event();
-    event->gatt_dm = dm;
-    event->type = state;
-
-    APP_EVENT_SUBMIT(event);
+    send_event(dm, state);
 }
 
 static void discovery_service_not_found_cb(struct bt_conn *conn, void *ctx)
@@ -87,6 +93,7 @@ static void discovery_next(void)
     if (cur_conn == NULL || (state + 1) > DISCOVERY_EVENT_COUNT) return;
 
     if (++state == DISCOVERY_EVENT_COUNT) {
+        send_event(NULL, state);
         deinit_conn();
         return;
     }
