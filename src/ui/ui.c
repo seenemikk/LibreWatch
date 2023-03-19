@@ -184,7 +184,7 @@ static void init_popups(void)
 
 static void app_event(lv_event_t *evt);
 
-static void open_app(enum ui_app_type type, lv_scr_load_anim_t anim)
+static void open_app(enum ui_app_type type)
 {
     __ASSERT_NO_MSG(type < UI_APP_COUNT);
     if (type >= UI_APP_COUNT) return;
@@ -209,7 +209,7 @@ static void open_app(enum ui_app_type type, lv_scr_load_anim_t anim)
     if (ui.popups.active != UI_POPUP_COUNT) {
         lv_obj_del(prev_app->screen);
     } else {
-        lv_scr_load_anim(app->screen, anim, anim != LV_SCR_LOAD_ANIM_NONE ? APP_ANIM_SPEED : 0, 0, true);
+        lv_scr_load_anim(app->screen, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0, true);
     }
 
     if (prev_app) prev_app->screen = NULL;
@@ -235,7 +235,7 @@ static void app_event(lv_event_t *evt)
         if (ui.apps.arr[new_app] != NULL) break;
     }
 
-    open_app(new_app, dir == LV_DIR_LEFT ? LV_SCR_LOAD_ANIM_MOVE_LEFT : LV_SCR_LOAD_ANIM_MOVE_RIGHT);
+    open_app(new_app);
 }
 
 static void init_apps(void)
@@ -253,7 +253,7 @@ static void init_apps(void)
     enum ui_app_type type = 0;
     for (; type < UI_APP_COUNT && ui.apps.arr[type] == NULL; type++);
 
-    if (type < UI_APP_COUNT) open_app(type, LV_SCR_LOAD_ANIM_NONE);
+    if (type < UI_APP_COUNT) open_app(type);
 }
 
 //////////////// APPS ////////////////
@@ -298,7 +298,7 @@ err:
 
 static void handle_app_show(struct ui_app_show_event *evt)
 {
-    open_app(evt->type, evt->type < ui.apps.active ? LV_SCR_LOAD_ANIM_MOVE_RIGHT : LV_SCR_LOAD_ANIM_MOVE_LEFT);
+    open_app(evt->type);
 }
 
 static void handle_popup_show(struct ui_popup_show_event *evt)
