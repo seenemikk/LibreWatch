@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 
 #include "ui_app.h"
+#include "ui_assets.h"
 
 #define UPDATE_INTERVAL_MS  20
 

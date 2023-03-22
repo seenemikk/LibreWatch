@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 
 #include "ui_app.h"
+#include "ui_assets.h"
 
 #define MODULE ui_app_media
 #include "media_event.h"

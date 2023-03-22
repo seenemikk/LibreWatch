@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 
 #include "ui_popup.h"
+#include "ui_assets.h"
 
 #define MODULE ui_popup_passkey
 #include "passkey_event.h"
@@ -23,11 +24,11 @@ static void update(void)
 
     if (state.show) {
         lv_label_set_text_fmt(label, "%06d", state.passkey);
-        lv_obj_set_style_bg_color(screen, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(screen, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN | LV_STATE_DEFAULT);
         if (k_work_delayable_is_pending(&work)) k_work_cancel_delayable(&work);
     } else {
         lv_label_set_text(label, state.success ? "Pairing Successful" : "Pairing Failed");
-        lv_obj_set_style_bg_color(screen, state.success ? lv_color_hex(0x56ee11) : lv_color_hex(0xee1111), LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(screen, state.success ? UI_ASSETS_COLOR_SUCCESS : UI_ASSETS_COLOR_ERROR, LV_PART_MAIN | LV_STATE_DEFAULT);
         if (!k_work_delayable_is_pending(&work)) k_work_reschedule(&work, K_SECONDS(POPUP_CLOSE_DELAY_S));
     }
 }

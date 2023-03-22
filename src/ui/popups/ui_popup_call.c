@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 
 #include "ui_popup.h"
+#include "ui_assets.h"
 
 #define MODULE ui_popup_call
 #include <caf/events/ble_common_event.h>
@@ -85,7 +86,7 @@ static void init(lv_obj_t *scr)
     lv_obj_set_height(button_positive, 55);
     lv_obj_set_align(button_positive, LV_ALIGN_CENTER);
     lv_obj_set_style_radius(button_positive, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(button_positive, lv_color_hex(0x17DA50), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(button_positive, UI_ASSETS_COLOR_SUCCESS, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(button_positive, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
     button_negative = lv_btn_create(screen);
@@ -93,7 +94,7 @@ static void init(lv_obj_t *scr)
     lv_obj_set_height(button_negative, 55);
     lv_obj_set_align(button_negative, LV_ALIGN_CENTER);
     lv_obj_set_style_radius(button_negative, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(button_negative, lv_color_hex(0xDA1738), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(button_negative, UI_ASSETS_COLOR_ERROR, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_event_cb(button_negative, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
     update();

@@ -95,7 +95,7 @@ static void draw_notification(struct notification *notif)
     lv_obj_set_align(label_title, LV_ALIGN_CENTER);
     lv_obj_set_size(label_title, WIDGET_WIDTH, 20);
     lv_obj_set_pos(label_title, 0, -60);
-    lv_obj_set_style_text_color(label_title, lv_color_hex(0xde7918), LV_PART_MAIN);
+    lv_obj_set_style_text_color(label_title, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
     lv_obj_set_style_text_align(label_title, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
     lv_obj_set_style_text_font(label_title, &lv_font_montserrat_18, LV_PART_MAIN);
 
@@ -150,7 +150,7 @@ static void init(lv_obj_t *scr)
     lv_obj_set_align(label_tab_number, LV_ALIGN_CENTER);
     lv_obj_set_pos(label_tab_number, 0, 100);
     lv_obj_set_style_text_font(label_tab_number, &ui_assets_chivo_mono_14, LV_PART_MAIN);
-    lv_obj_set_style_text_color(label_tab_number, lv_color_hex(0xde7918), LV_PART_MAIN);
+    lv_obj_set_style_text_color(label_tab_number, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
 
     draw_notifications();
 }

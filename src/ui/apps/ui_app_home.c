@@ -72,7 +72,7 @@ static void init(lv_obj_t *scr)
     image_steps = lv_img_create(panel_steps);
     lv_img_set_src(image_steps, &ui_assets_footprint);
     lv_obj_set_align(image_steps, LV_ALIGN_CENTER);
-    lv_obj_set_style_img_recolor(image_steps, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_set_style_img_recolor(image_steps, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
     lv_obj_set_style_img_recolor_opa(image_steps, 0xff, LV_PART_MAIN);
 
     label_steps = lv_label_create(panel_steps);
