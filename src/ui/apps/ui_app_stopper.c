@@ -8,11 +8,11 @@
 #define LABEL_TIME_FMT      "%02d:%02d:%02d:%03d"
 
 static lv_obj_t *screen;
-static lv_obj_t *label_start;
-static lv_obj_t *label_stop;
 static lv_obj_t *label_time;
-static lv_obj_t *btn_start;
-static lv_obj_t *btn_stop;
+static lv_obj_t *button_start;
+static lv_obj_t *button_stop;
+static lv_obj_t *image_start;
+static lv_obj_t *image_stop;
 
 static int64_t total_time;
 static int64_t start_time;
@@ -43,9 +43,11 @@ static void start(void)
 {
     if (paused) {
         start_time = k_uptime_get();
+        lv_img_set_src(image_start, &ui_assets_pause);
         k_work_reschedule(&work, K_MSEC(UPDATE_INTERVAL_MS));
     } else {
         total_time += k_uptime_get() - start_time;
+        lv_img_set_src(image_start, &ui_assets_play);
         k_work_cancel_delayable(&work);
     }
     paused = !paused;
@@ -58,6 +60,7 @@ static void stop(void)
     start_time = 0;
     total_time = 0;
     update_time_label();
+    lv_img_set_src(image_start, &ui_assets_play);
     k_work_cancel_delayable(&work);
 }
 
@@ -77,9 +80,9 @@ static void evt_handler(lv_event_t *evt)
 
     if (event_code != LV_EVENT_CLICKED) return;
 
-    if (target == btn_start) {
+    if (target == button_start) {
         start();
-    } else if (target == btn_stop) {
+    } else if (target == button_stop) {
         stop();
     }
 }
@@ -88,41 +91,39 @@ static void init(lv_obj_t *scr)
 {
     screen = scr;
 
-    btn_start = lv_btn_create(screen);
-    lv_obj_set_width(btn_start, 55);
-    lv_obj_set_height(btn_start, 55);
-    lv_obj_set_x(btn_start, 40);
-    lv_obj_set_y(btn_start, -40);
-    lv_obj_set_align(btn_start, LV_ALIGN_BOTTOM_LEFT);
-    lv_obj_set_style_radius(btn_start, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_add_event_cb(btn_start, evt_handler, LV_EVENT_CLICKED, NULL);
+    button_start = lv_btn_create(screen);
+    lv_obj_set_size(button_start, 55, 55);
+    lv_obj_set_align(button_start, LV_ALIGN_CENTER);
+    lv_obj_set_pos(button_start, 40, 40);
+    lv_obj_set_style_radius(button_start, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_start, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
+    lv_obj_add_event_cb(button_start, evt_handler, LV_EVENT_CLICKED, NULL);
 
-    label_start = lv_label_create(btn_start);
-    lv_obj_set_width(label_start, LV_SIZE_CONTENT);
-    lv_obj_set_height(label_start, LV_SIZE_CONTENT);
-    lv_obj_set_align(label_start, LV_ALIGN_CENTER);
-    lv_label_set_text(label_start, "START");
+    image_start = lv_img_create(button_start);
+    lv_img_set_src(image_start, paused ? &ui_assets_play : &ui_assets_pause);
+    lv_obj_set_align(image_start, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_start, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_start, 0xff, LV_PART_MAIN);
 
-    btn_stop = lv_btn_create(screen);
-    lv_obj_set_width(btn_stop, 55);
-    lv_obj_set_height(btn_stop, 55);
-    lv_obj_set_x(btn_stop, -40);
-    lv_obj_set_y(btn_stop, -40);
-    lv_obj_set_align(btn_stop, LV_ALIGN_BOTTOM_RIGHT);
-    lv_obj_set_style_radius(btn_stop, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_add_event_cb(btn_stop, evt_handler, LV_EVENT_CLICKED, NULL);
+    button_stop = lv_btn_create(screen);
+    lv_obj_set_size(button_stop, 55, 55);
+    lv_obj_set_align(button_stop, LV_ALIGN_CENTER);
+    lv_obj_set_pos(button_stop, -40, 40);
+    lv_obj_set_style_radius(button_stop, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_stop, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
+    lv_obj_add_event_cb(button_stop, evt_handler, LV_EVENT_CLICKED, NULL);
 
-    label_stop = lv_label_create(btn_stop);
-    lv_obj_set_width(label_stop, LV_SIZE_CONTENT);
-    lv_obj_set_height(label_stop, LV_SIZE_CONTENT);
-    lv_obj_set_align(label_stop, LV_ALIGN_CENTER);
-    lv_label_set_text(label_stop, "STOP");
+    image_stop = lv_img_create(button_stop);
+    lv_img_set_src(image_stop, &ui_assets_stop);
+    lv_obj_set_align(image_stop, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_stop, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_stop, 0xff, LV_PART_MAIN);
 
     label_time = lv_label_create(screen);
-    lv_obj_set_width(label_time, LV_SIZE_CONTENT);
-    lv_obj_set_height(label_time, LV_SIZE_CONTENT);
-    lv_obj_set_y(label_time, -37);
+    lv_obj_set_size(label_time, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_align(label_time, LV_ALIGN_CENTER);
+    lv_obj_set_pos(label_time, 0, -15);
+    lv_obj_set_style_text_font(label_time, &ui_assets_chivo_mono_24, LV_PART_MAIN);
 
     update_time_label();
 
@@ -133,10 +134,10 @@ static void deinit(void)
 {
     screen = NULL;
     label_time = NULL;
-    label_start = NULL;
-    label_stop = NULL;
-    btn_start = NULL;
-    btn_stop = NULL;
+    button_start = NULL;
+    button_stop = NULL;
+    image_start = NULL;
+    image_stop = NULL;
     k_work_cancel_delayable(&work);
 }
 

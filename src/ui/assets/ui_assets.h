@@ -6,6 +6,9 @@
 #define UI_ASSETS_COLOR_WHITE       lv_color_hex(0xffffff)
 
 LV_IMG_DECLARE(ui_assets_footprint);
+LV_IMG_DECLARE(ui_assets_play);
+LV_IMG_DECLARE(ui_assets_pause);
+LV_IMG_DECLARE(ui_assets_stop);
 
 LV_FONT_DECLARE(ui_assets_chivo_mono_14);
 LV_FONT_DECLARE(ui_assets_chivo_mono_24);
