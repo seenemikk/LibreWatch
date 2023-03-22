@@ -15,6 +15,8 @@ static lv_obj_t *label_category;
 static lv_obj_t *label_name;
 static lv_obj_t *button_positive;
 static lv_obj_t *button_negative;
+static lv_obj_t *image_positive;
+static lv_obj_t *image_negative;
 
 static void button_clicked_cb(lv_event_t *evt)
 {
@@ -53,20 +55,17 @@ static void update(void)
     lv_obj_add_flag(button_negative, LV_OBJ_FLAG_HIDDEN);
 
     if (cur_notif.info.evt_flags.positive_action && cur_notif.info.evt_flags.negative_action) {
-        lv_obj_set_x(button_positive, -45);
-        lv_obj_set_y(button_positive, 55);
+        lv_obj_set_pos(button_positive, -45, 55);
         lv_obj_clear_flag(button_positive, LV_OBJ_FLAG_HIDDEN);
 
-        lv_obj_set_x(button_negative, 45);
-        lv_obj_set_y(button_negative, 55);
+        lv_obj_set_pos(button_negative, 45, 55);
         lv_obj_clear_flag(button_negative, LV_OBJ_FLAG_HIDDEN);
 
         return;
     }
 
     lv_obj_t *btn = cur_notif.info.evt_flags.positive_action ? button_positive : button_negative;
-    lv_obj_set_x(btn, 0);
-    lv_obj_set_y(btn, 55);
+    lv_obj_set_pos(btn, 0, 55);
     lv_obj_clear_flag(btn, LV_OBJ_FLAG_HIDDEN);
 }
 
@@ -75,27 +74,44 @@ static void init(lv_obj_t *scr)
     screen = scr;
 
     label_category = lv_label_create(screen);
-    lv_obj_set_y(label_category, -45);
+    lv_obj_set_pos(label_category, 0, -50);
     lv_obj_set_align(label_category, LV_ALIGN_CENTER);
+    lv_obj_set_size(label_category, 150, LV_SIZE_CONTENT);
+    lv_obj_set_style_text_align(label_category, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 
     label_name = lv_label_create(screen);
+    lv_label_set_long_mode(label_name, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_obj_set_pos(label_name, 0, -10);
     lv_obj_set_align(label_name, LV_ALIGN_CENTER);
+    lv_obj_set_size(label_name, 150, LV_SIZE_CONTENT);
+    lv_obj_set_style_text_align(label_name, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_name, &lv_font_montserrat_18, LV_PART_MAIN);
 
     button_positive = lv_btn_create(screen);
-    lv_obj_set_width(button_positive, 55);
-    lv_obj_set_height(button_positive, 55);
+    lv_obj_set_size(button_positive, 55, 55);
     lv_obj_set_align(button_positive, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(button_positive, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(button_positive, UI_ASSETS_COLOR_SUCCESS, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(button_positive, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_positive, UI_ASSETS_COLOR_SUCCESS, LV_PART_MAIN);
     lv_obj_add_event_cb(button_positive, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
+    image_positive = lv_img_create(button_positive);
+    lv_img_set_src(image_positive, &ui_assets_call);
+    lv_obj_set_align(image_positive, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_positive, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_positive, 0xff, LV_PART_MAIN);
+
     button_negative = lv_btn_create(screen);
-    lv_obj_set_width(button_negative, 55);
-    lv_obj_set_height(button_negative, 55);
+    lv_obj_set_size(button_negative, 55, 55);
     lv_obj_set_align(button_negative, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(button_negative, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(button_negative, UI_ASSETS_COLOR_ERROR, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(button_negative, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_negative, UI_ASSETS_COLOR_ERROR, LV_PART_MAIN);
     lv_obj_add_event_cb(button_negative, button_clicked_cb, LV_EVENT_CLICKED, NULL);
+
+    image_negative = lv_img_create(button_negative);
+    lv_img_set_src(image_negative, &ui_assets_hangup);
+    lv_obj_set_align(image_negative, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_negative, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_negative, 0xff, LV_PART_MAIN);
 
     update();
 }
@@ -107,6 +123,8 @@ static void deinit(void)
     label_name = NULL;
     button_positive = NULL;
     button_negative = NULL;
+    image_positive = NULL;
+    image_negative = NULL;
     memset(&cur_notif, 0, sizeof(cur_notif));
 }
 

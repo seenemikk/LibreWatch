@@ -12,6 +12,8 @@ LV_IMG_DECLARE(ui_assets_pause);
 LV_IMG_DECLARE(ui_assets_stop);
 LV_IMG_DECLARE(ui_assets_next);
 LV_IMG_DECLARE(ui_assets_previous);
+LV_IMG_DECLARE(ui_assets_call);
+LV_IMG_DECLARE(ui_assets_hangup);
 
 LV_FONT_DECLARE(ui_assets_chivo_mono_18);
 LV_FONT_DECLARE(ui_assets_chivo_mono_24);
