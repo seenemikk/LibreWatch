@@ -27,8 +27,8 @@ LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
 
 #define INACTIVE_DOT_DIAMETER   6
 #define ACTIVE_DOT_DIAMETER     10
-#define INACTIVE_DOT_COLOR      0x393839
-#define ACTIVE_DOT_COLOR        0xffffff
+#define INACTIVE_DOT_COLOR      UI_ASSETS_COLOR_GRAY
+#define ACTIVE_DOT_COLOR        UI_ASSETS_COLOR_WHITE
 #define DOT_ANGLE               10  // Must be even
 #define DOT_DISTANCE            108
 
@@ -73,7 +73,7 @@ static void init_menu_dots(struct ui_app *app)
     uint32_t deg = 270 - (ui.apps.count - 1) * DOT_ANGLE / 2;
     for (uint8_t i = 0; i < ui.apps.count; i++) {
         uint8_t diameter = 0;
-        uint32_t color = 0;
+        lv_color_t color = {0};
         if (i == app->type) {
             diameter = ACTIVE_DOT_DIAMETER;
             color = ACTIVE_DOT_COLOR;
@@ -89,7 +89,7 @@ static void init_menu_dots(struct ui_app *app)
         lv_obj_set_pos(dot, x, y);
         lv_obj_set_align(dot, LV_ALIGN_CENTER);
         lv_obj_set_style_radius(dot, 90, LV_PART_MAIN);
-        lv_obj_set_style_bg_color(dot, lv_color_hex(color), LV_PART_MAIN);
+        lv_obj_set_style_bg_color(dot, color, LV_PART_MAIN);
         lv_obj_set_style_border_width(dot, 0, LV_PART_MAIN);
 
         deg += DOT_ANGLE;

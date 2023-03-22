@@ -5,6 +5,7 @@
 #define UI_ASSETS_COLOR_ERROR       lv_color_hex(0xc50a26)
 #define UI_ASSETS_COLOR_WHITE       lv_color_hex(0xffffff)
 #define UI_ASSETS_COLOR_BLACK       lv_color_hex(0x101418)
+#define UI_ASSETS_COLOR_GRAY        lv_color_hex(0x393839)
 
 LV_IMG_DECLARE(ui_assets_footprint);
 LV_IMG_DECLARE(ui_assets_play);

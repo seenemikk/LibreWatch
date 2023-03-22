@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 
 #include "ui_popup.h"
+#include "ui_assets.h"
 
 #define MODULE ui_popup_update
 #include <caf/events/ble_common_event.h>
@@ -42,15 +43,17 @@ static void init(lv_obj_t *scr)
     screen = scr;
 
     label_status = lv_label_create(screen);
-    lv_obj_set_x(label_status, 0);
-    lv_obj_set_y(label_status, -30);
+    lv_obj_set_pos(label_status, 0, -10);
     lv_obj_set_align(label_status, LV_ALIGN_CENTER);
     lv_label_set_text(label_status, "Device updating");
+    lv_obj_set_style_text_font(label_status, &lv_font_montserrat_18, LV_PART_MAIN);
 
     bar_progress = lv_bar_create(screen);
-    lv_obj_set_width(bar_progress, 150);
-    lv_obj_set_height(bar_progress, 15);
+    lv_obj_set_size(bar_progress, 150, 15);
     lv_obj_set_align(bar_progress, LV_ALIGN_CENTER);
+    lv_obj_set_pos(bar_progress, 0, 20);
+    lv_obj_set_style_bg_color(bar_progress, UI_ASSETS_COLOR_GRAY, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(bar_progress, UI_ASSETS_COLOR_PRIMARY, LV_PART_INDICATOR);
 
     update();
 }
