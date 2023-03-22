@@ -137,7 +137,7 @@ static void ui_task(struct k_work *work)
 static void send_wake_up(void)
 {
     struct wake_up_event *evt = new_wake_up_event();
-    APP_EVENT_SUBMIT(evt);
+    if (evt != NULL) APP_EVENT_SUBMIT(evt);
 }
 
 /////////////// POPUPS ///////////////

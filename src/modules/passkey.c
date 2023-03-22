@@ -17,9 +17,11 @@ static void passkey_show(unsigned int passkey)
     atomic_set(&passkey_active, true);
 
     struct passkey_event *event = new_passkey_event();
-    event->passkey = passkey;
-    event->show = true;
-    APP_EVENT_SUBMIT(event);
+    if (event != NULL) {
+        event->passkey = passkey;
+        event->show = true;
+        APP_EVENT_SUBMIT(event);
+    }
 }
 
 static void passkey_hide(bool success)
@@ -28,9 +30,11 @@ static void passkey_hide(bool success)
     atomic_set(&passkey_active, false);
 
     struct passkey_event *event = new_passkey_event();
-    event->success = success;
-    event->show = false;
-    APP_EVENT_SUBMIT(event);
+    if (event != NULL) {
+        event->success = success;
+        event->show = false;
+        APP_EVENT_SUBMIT(event);
+    }
 }
 
 static void passkey_display(struct bt_conn *conn, unsigned int passkey)

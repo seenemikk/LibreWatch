@@ -44,15 +44,19 @@ struct ui_popup {
 #define UI_POPUP_OPEN(_type) \
     do { \
         struct ui_popup_show_event *evt = new_ui_popup_show_event(); \
-        evt->show = true; \
-        evt->type = _type; \
-        APP_EVENT_SUBMIT(evt); \
+        if (evt != NULL) { \
+            evt->show = true; \
+            evt->type = _type; \
+            APP_EVENT_SUBMIT(evt); \
+        } \
     } while(0)
 
 #define UI_POPUP_CLOSE(_type) \
     do { \
         struct ui_popup_show_event *evt = new_ui_popup_show_event(); \
-        evt->show = false; \
-        evt->type = _type; \
-        APP_EVENT_SUBMIT(evt); \
+        if (evt != NULL) { \
+            evt->show = false; \
+            evt->type = _type; \
+            APP_EVENT_SUBMIT(evt); \
+        } \
     } while(0)

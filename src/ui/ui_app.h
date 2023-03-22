@@ -31,6 +31,8 @@ struct ui_app {
 #define UI_APP_OPEN(_type) \
     do { \
         struct ui_app_show_event *evt = new_ui_app_show_event(); \
-        evt->type = _type; \
-        APP_EVENT_SUBMIT(evt); \
+        if (evt != NULL) { \
+            evt->type = _type; \
+            APP_EVENT_SUBMIT(evt); \
+        } \
     } while(0)

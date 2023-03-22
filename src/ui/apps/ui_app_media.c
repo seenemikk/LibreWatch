@@ -63,6 +63,7 @@ static void button_clicked_cb(lv_event_t *evt)
     if (event_code != LV_EVENT_CLICKED) return;
 
     struct media_command_event *event = new_media_command_event();
+    if (event == NULL) return;
 
     if (target == button_play_pause) {
         event->command = playing ? MEDIA_COMMAND_PAUSE : MEDIA_COMMAND_PLAY;

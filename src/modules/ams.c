@@ -62,6 +62,8 @@ static void init_entity_update(void)
 static void handle_player_info(const struct bt_ams_entity_update_notif *notif)
 {
     struct media_player_event *event = new_media_player_event();
+    if (event == NULL) return;
+
     event->elapsed_time = 0;
     event->playback_rate = 0;
     event->state = MEDIA_PLAYER_STATE_PAUSED;
@@ -121,6 +123,8 @@ static void handle_track_info(const struct bt_ams_entity_update_notif *notif)
     // TODO handle truncation
 
     struct media_track_event *event = new_media_track_event();
+    if (event == NULL) return;
+
     snprintk(event->str, MIN(sizeof(event->str), notif->len + 1), "%s", notif->data);
 
     switch (notif->ent_attr.attribute.track) {
@@ -184,6 +188,8 @@ static void ams_eu_cb(struct bt_ams_client *ams_c, const struct bt_ams_entity_up
 static void ams_rc_cb(struct bt_ams_client *ams_c, const uint8_t *data, size_t len)
 {
     struct media_capabilities_event *event = new_media_capabilities_event();
+    if (event == NULL) return;
+
     event->capabilities = 0;
 
     for (size_t i = 0; i < len; i++) {
@@ -255,14 +261,16 @@ static void handle_ble_peer_event(struct ble_peer_event *evt)
 {
     if (evt->state != PEER_STATE_DISCONNECTED) return;
 
+    bt_ams_client_init(&ams_c);
+
     struct media_player_event *event = new_media_player_event();
+    if (event == NULL) return;
+
     event->elapsed_time = 0;
     event->playback_rate = 0;
     event->timestamp = k_uptime_get();
     event->state = MEDIA_PLAYER_STATE_DISCONNECTED;
     APP_EVENT_SUBMIT(event);
-
-    bt_ams_client_init(&ams_c);
 }
 
 static void handle_discovery_event(struct discovery_event *event)
