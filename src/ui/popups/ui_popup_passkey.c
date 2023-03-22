@@ -24,11 +24,12 @@ static void update(void)
 
     if (state.show) {
         lv_label_set_text_fmt(label, "%06d", state.passkey);
-        lv_obj_set_style_bg_color(screen, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_text_font(label, &ui_assets_chivo_mono_48, LV_PART_MAIN);
         if (k_work_delayable_is_pending(&work)) k_work_cancel_delayable(&work);
     } else {
         lv_label_set_text(label, state.success ? "Pairing Successful" : "Pairing Failed");
-        lv_obj_set_style_bg_color(screen, state.success ? UI_ASSETS_COLOR_SUCCESS : UI_ASSETS_COLOR_ERROR, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_bg_color(screen, state.success ? UI_ASSETS_COLOR_SUCCESS : UI_ASSETS_COLOR_ERROR, LV_PART_MAIN);
+        lv_obj_set_style_text_font(label, &lv_font_montserrat_18, LV_PART_MAIN);
         if (!k_work_delayable_is_pending(&work)) k_work_reschedule(&work, K_SECONDS(POPUP_CLOSE_DELAY_S));
     }
 }
@@ -36,8 +37,10 @@ static void update(void)
 static void init(lv_obj_t *scr)
 {
     screen = scr;
+
     label = lv_label_create(screen);
-    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_align(label, LV_ALIGN_CENTER);
+
     update();
 }
 

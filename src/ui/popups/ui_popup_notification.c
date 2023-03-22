@@ -52,7 +52,7 @@ static struct notification *get_notification(uint8_t id)
 static void free_notification(struct notification *notif)
 {
     __ASSERT_NO_MSG(notif);
-    if (notif == NULL) return;
+    if (notif == NULL || !notif->valid) return;
 
     sys_slist_find_and_remove(&notifications_list, &notif->data.header.node);
     notif->valid = false;
