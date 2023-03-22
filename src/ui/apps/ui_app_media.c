@@ -15,12 +15,12 @@ static lv_obj_t *screen;
 static lv_obj_t *arc_elapsed_time;
 static lv_obj_t *label_artist;
 static lv_obj_t *label_title;
-static lv_obj_t *label_next;
-static lv_obj_t *label_previous;
-static lv_obj_t *label_play_pause;
 static lv_obj_t *button_next;
 static lv_obj_t *button_previous;
 static lv_obj_t *button_play_pause;
+static lv_obj_t *image_next;
+static lv_obj_t *image_previous;
+static lv_obj_t *image_play_pause;
 
 static char artist[CONFIG_SMARTWATCH_AMS_MAX_STR_LEN + 1];
 static char title[CONFIG_SMARTWATCH_AMS_MAX_STR_LEN + 1];
@@ -47,7 +47,7 @@ static void redraw()
 {
     if (screen == NULL) return;
 
-    lv_label_set_text(label_play_pause, playing ? "||" : ">");
+    lv_img_set_src(image_play_pause, playing ? &ui_assets_pause : &ui_assets_play);
     lv_label_set_text(label_title, title);
     lv_label_set_text(label_artist, artist);
     lv_arc_set_value(arc_elapsed_time, elapsed_time_percentage());
@@ -83,69 +83,71 @@ static void init(lv_obj_t *scr)
     screen = scr;
 
     arc_elapsed_time = lv_arc_create(screen);
-    lv_obj_set_width(arc_elapsed_time, 240);
-    lv_obj_set_height(arc_elapsed_time, 240);
+    lv_obj_set_size(arc_elapsed_time, 240, 240);
     lv_obj_set_align(arc_elapsed_time, LV_ALIGN_CENTER);
     lv_obj_clear_flag(arc_elapsed_time, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_set_style_radius(arc_elapsed_time, 350, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(arc_elapsed_time, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(arc_elapsed_time, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(arc_elapsed_time, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(arc_elapsed_time, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(arc_elapsed_time, 0, LV_PART_KNOB);
+    lv_arc_set_bg_angles(arc_elapsed_time, 90, 89);
+    lv_obj_set_style_arc_width(arc_elapsed_time, 3, LV_PART_MAIN);
+    lv_obj_set_style_arc_color(arc_elapsed_time, UI_ASSETS_COLOR_PRIMARY, LV_PART_INDICATOR);
+    lv_obj_set_style_arc_width(arc_elapsed_time, 3, LV_PART_INDICATOR);
 
     label_artist = lv_label_create(screen);
-    lv_obj_set_width(label_artist, 100);
-    lv_obj_set_x(label_artist, 0);
-    lv_obj_set_y(label_artist, -30);
+    lv_obj_set_size(label_artist, 160, LV_SIZE_CONTENT);
+    lv_obj_set_pos(label_artist, 0, -45);
     lv_obj_set_align(label_artist, LV_ALIGN_CENTER);
     lv_label_set_long_mode(label_artist, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_obj_set_style_text_align(label_artist, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(label_artist, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_artist, &lv_font_montserrat_14, LV_PART_MAIN);
 
     label_title = lv_label_create(screen);
-    lv_obj_set_width(label_title, 130);
-    lv_obj_set_x(label_title, 0);
-    lv_obj_set_y(label_title, -60);
+    lv_obj_set_size(label_title, 190, LV_SIZE_CONTENT);
+    lv_obj_set_pos(label_title, 0, -15);
     lv_obj_set_align(label_title, LV_ALIGN_CENTER);
     lv_label_set_long_mode(label_title, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_obj_set_style_text_align(label_title, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(label_title, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_title, &lv_font_montserrat_18, LV_PART_MAIN);
 
     button_previous = lv_btn_create(screen);
-    lv_obj_set_width(button_previous, 45);
-    lv_obj_set_height(button_previous, 45);
-    lv_obj_set_x(button_previous, -66);
-    lv_obj_set_y(button_previous, 45);
+    lv_obj_set_size(button_previous, 55, 55);
+    lv_obj_set_pos(button_previous, -70, 40);
     lv_obj_set_align(button_previous, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(button_previous, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(button_previous, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_previous, UI_ASSETS_COLOR_BLACK, LV_PART_MAIN);
     lv_obj_add_event_cb(button_previous, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
-    label_previous = lv_label_create(button_previous);
-    lv_obj_set_align(label_previous, LV_ALIGN_CENTER);
-    lv_label_set_text(label_previous, "<<");
+    image_previous = lv_img_create(button_previous);
+    lv_img_set_src(image_previous, &ui_assets_previous);
+    lv_obj_set_align(image_previous, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_previous, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_previous, 0xff, LV_PART_MAIN);
 
     button_next = lv_btn_create(screen);
-    lv_obj_set_width(button_next, 45);
-    lv_obj_set_height(button_next, 45);
-    lv_obj_set_x(button_next, 66);
-    lv_obj_set_y(button_next, 45);
+    lv_obj_set_size(button_next, 55, 55);
+    lv_obj_set_pos(button_next, 70, 40);
     lv_obj_set_align(button_next, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(button_next, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(button_next, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_next, UI_ASSETS_COLOR_BLACK, LV_PART_MAIN);
     lv_obj_add_event_cb(button_next, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
-    label_next = lv_label_create(button_next);
-    lv_obj_set_align(label_next, LV_ALIGN_CENTER);
-    lv_label_set_text(label_next, ">>");
+    image_next = lv_img_create(button_next);
+    lv_img_set_src(image_next, &ui_assets_next);
+    lv_obj_set_align(image_next, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_next, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_next, 0xff, LV_PART_MAIN);
 
     button_play_pause = lv_btn_create(screen);
-    lv_obj_set_width(button_play_pause, 55);
-    lv_obj_set_height(button_play_pause, 55);
-    lv_obj_set_x(button_play_pause, 0);
-    lv_obj_set_y(button_play_pause, 45);
+    lv_obj_set_size(button_play_pause, 55, 55);
+    lv_obj_set_pos(button_play_pause, 0, 40);
     lv_obj_set_align(button_play_pause, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(button_play_pause, 90, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(button_play_pause, 90, LV_PART_MAIN);
+    lv_obj_set_style_bg_color(button_play_pause, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
     lv_obj_add_event_cb(button_play_pause, button_clicked_cb, LV_EVENT_CLICKED, NULL);
 
-    label_play_pause = lv_label_create(button_play_pause);
-    lv_obj_set_align(label_play_pause, LV_ALIGN_CENTER);
+    image_play_pause = lv_img_create(button_play_pause);
+    lv_obj_set_align(image_play_pause, LV_ALIGN_CENTER);
+    lv_obj_set_style_img_recolor(image_play_pause, UI_ASSETS_COLOR_WHITE, LV_PART_MAIN);
+    lv_obj_set_style_img_recolor_opa(image_play_pause, 0xff, LV_PART_MAIN);
 
     redraw();
 }
@@ -156,12 +158,12 @@ static void deinit(void)
     arc_elapsed_time = NULL;
     label_artist = NULL;
     label_title = NULL;
-    label_next = NULL;
-    label_previous = NULL;
-    label_play_pause = NULL;
     button_next = NULL;
     button_previous = NULL;
     button_play_pause = NULL;
+    image_next = NULL;
+    image_previous = NULL;
+    image_play_pause = NULL;
     k_work_cancel_delayable(&redraw_work);
 }
 
