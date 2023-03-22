@@ -24,18 +24,21 @@ static void imu_trigger_handler(const struct device *dev, const struct sensor_tr
 {
     switch ((int16_t)trigger->chan)
     {
-        case SENSOR_CHAN_ICM42605_WAKE:
+        case SENSOR_CHAN_ICM42605_WAKE: {
             struct wake_up_event *event = new_wake_up_event();
             if (event != NULL) APP_EVENT_SUBMIT(event);
             break;
+        }
 
-        case SENSOR_CHAN_ICM42605_SLEEP:
+        case SENSOR_CHAN_ICM42605_SLEEP: {
             struct power_down_event *event = new_power_down_event();
             if (event != NULL) APP_EVENT_SUBMIT(event);
             break;
+        }
 
-        default:
+        default: {
             break;
+        }
     }
 }
 
