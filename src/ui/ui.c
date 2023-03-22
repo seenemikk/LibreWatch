@@ -102,10 +102,10 @@ static void init_time_label(struct ui_app *app)
     if (app->type == UI_APP_HOME) return;
 
     lv_obj_t *label_time = lv_label_create(app->screen);
-    lv_obj_set_pos(label_time, 0, -100);
+    lv_obj_set_pos(label_time, 0, -95);
     lv_obj_set_align(label_time, LV_ALIGN_CENTER);
     lv_obj_set_style_text_align(label_time, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
-    lv_obj_set_style_text_font(label_time, &ui_assets_chivo_mono_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_time, &ui_assets_chivo_mono_18, LV_PART_MAIN);
 }
 
 static void update_time_label(void)

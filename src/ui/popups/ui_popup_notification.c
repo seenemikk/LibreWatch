@@ -149,7 +149,7 @@ static void init(lv_obj_t *scr)
     lv_label_set_text(label_tab_number, "");
     lv_obj_set_align(label_tab_number, LV_ALIGN_CENTER);
     lv_obj_set_pos(label_tab_number, 0, 100);
-    lv_obj_set_style_text_font(label_tab_number, &ui_assets_chivo_mono_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(label_tab_number, &ui_assets_chivo_mono_18, LV_PART_MAIN);
     lv_obj_set_style_text_color(label_tab_number, UI_ASSETS_COLOR_PRIMARY, LV_PART_MAIN);
 
     draw_notifications();
