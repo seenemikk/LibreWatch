@@ -35,8 +35,6 @@ static uint8_t app_attributes[] = {
     BT_ANCS_APP_ATTR_ID_DISPLAY_NAME,
 };
 
-// TODO this module sucks, make it better. You can't perform notification actions when attribute request is active.
-
 static sys_slist_t notif_queue = SYS_SLIST_STATIC_INIT(&notification_queue);
 static size_t notif_queue_len;
 

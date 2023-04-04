@@ -6,8 +6,6 @@ config SMARTWATCH_ANCS
     depends on CAF_BLE_STATE
     depends on BT_ANCS_CLIENT
 
-if SMARTWATCH_ANCS
-
 config SMARTWATCH_ANCS_MAX_TITLE_SIZE
     int "Maximum title size including NUL character"
     default 50
@@ -22,6 +20,8 @@ config SMARTWATCH_ANCS_MAX_NOTIFICATIONS
     int "Maximum number of active notifications"
     default 10
     range 1 20
+
+if SMARTWATCH_ANCS
 
 module = SMARTWATCH_ANCS
 module-str = ancs

@@ -69,6 +69,7 @@ static void cancel_ui_task(void)
 static void init_menu_dots(struct ui_app *app)
 {
     __ASSERT_NO_MSG(ui.apps.count > 0 && app && app->screen);
+    if (ui.apps.count == 0 || app == NULL || app->screen == NULL) return;
 
     uint32_t deg = 270 - (ui.apps.count - 1) * DOT_ANGLE / 2;
     for (uint8_t i = 0; i < ui.apps.count; i++) {
