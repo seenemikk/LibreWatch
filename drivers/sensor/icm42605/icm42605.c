@@ -174,7 +174,7 @@ static int icm42605_interrupt_init(const struct device *dev)
 static int icm42605_sensor_init(const struct device *dev) {
     int ret = 0;
 
-    for (int i = 0; i < sizeof(init_commands) / sizeof(*init_commands); i++) {
+    for (int i = 0; i < ARRAY_SIZE(init_commands); i++) {
         if ((ret = icm42605_write(dev, BANK(init_commands[i].reg), REG(init_commands[i].reg), init_commands[i].val))) return ret;
         if (init_commands[i].delay_ms) k_sleep(K_MSEC(init_commands[i].delay_ms));
     }

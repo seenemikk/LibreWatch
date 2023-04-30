@@ -58,9 +58,9 @@ struct media_player_event {
 struct media_track_event {
     struct app_event_header header;
 
-    uint8_t type;                                       // enum media_track_info_type
+    uint8_t type;                                           // enum media_track_info_type
     union {
-        uint32_t duration;                              // Available when type is MEDIA_TRACK_INFO_DURATION
+        uint32_t duration;                                  // Available when type is MEDIA_TRACK_INFO_DURATION
         char str[CONFIG_SMARTWATCH_AMS_MAX_STR_LEN + 1];    // Available when type is MEDIA_TRACK_INFO_TITLE or MEDIA_TRACK_INFO_ARTIST
     };
 };

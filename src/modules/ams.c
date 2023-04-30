@@ -6,7 +6,6 @@
 #include <bluetooth/services/ams_client.h>
 
 #define MODULE ams
-#include <caf/events/module_state_event.h>
 #include <caf/events/ble_common_event.h>
 
 #include "media_event.h"
@@ -237,16 +236,6 @@ static void discovery_completed(struct bt_gatt_dm *dm)
     init_entity_update();
 }
 
-static void init(void)
-{
-    static bool initialized;
-
-    __ASSERT_NO_MSG(!initialized);
-    initialized = true;
-
-    module_set_state(MODULE_STATE_READY);
-}
-
 static void handle_media_command_event(struct media_command_event *evt)
 {
     if (evt->command >= MEDIA_COMMAND_COUNT) return;
@@ -281,12 +270,6 @@ static void handle_discovery_event(struct discovery_event *event)
 
 static bool app_event_handler(const struct app_event_header *aeh)
 {
-    if (is_module_state_event(aeh)) {
-        struct module_state_event *event = cast_module_state_event(aeh);
-        if (check_state(event, MODULE_ID(main), MODULE_STATE_READY)) init();
-        return false;
-    }
-
     if (is_ble_peer_event(aeh)) {
         handle_ble_peer_event(cast_ble_peer_event(aeh));
         return false;
@@ -309,7 +292,6 @@ static bool app_event_handler(const struct app_event_header *aeh)
 }
 
 APP_EVENT_LISTENER(MODULE, app_event_handler);
-APP_EVENT_SUBSCRIBE(MODULE, module_state_event);
 APP_EVENT_SUBSCRIBE(MODULE, ble_peer_event_event);
 APP_EVENT_SUBSCRIBE(MODULE, discovery_event);
 APP_EVENT_SUBSCRIBE(MODULE, media_command_event);

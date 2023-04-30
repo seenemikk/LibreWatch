@@ -248,7 +248,7 @@ static int gc9a01a_cmd_init(const struct device *dev)
 {
     int ret = 0;
 
-    for (int i = 0; i < sizeof(gc9a01a_init_cmds) / sizeof(*gc9a01a_init_cmds); i++) {
+    for (int i = 0; i < ARRAY_SIZE(gc9a01a_init_cmds); i++) {
         ret = gc9a01a_transmit(dev, &gc9a01a_init_cmds[i]);
         if (ret) return ret;
     }
