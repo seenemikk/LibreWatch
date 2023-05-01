@@ -21,4 +21,4 @@ APP_EVENT_INFO_DEFINE(sensors_event,
 APP_EVENT_TYPE_DEFINE(sensors_event,
                       log_sensors_event,
                       &sensors_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_SENSORS_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_SENSORS_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

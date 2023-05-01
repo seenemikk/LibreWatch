@@ -41,7 +41,7 @@ APP_EVENT_INFO_DEFINE(notification_event,
 APP_EVENT_TYPE_DEFINE(notification_event,
                       log_notification_event,
                       &notification_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_NOTIFICATION_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_NOTIFICATION_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
 
 APP_EVENT_INFO_DEFINE(notification_action_event,
                       ENCODE(NRF_PROFILER_ARG_U32, NRF_PROFILER_ARG_U8),
@@ -51,4 +51,4 @@ APP_EVENT_INFO_DEFINE(notification_action_event,
 APP_EVENT_TYPE_DEFINE(notification_action_event,
                       log_notification_action_event,
                       &notification_action_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_NOTIFICATION_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_NOTIFICATION_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

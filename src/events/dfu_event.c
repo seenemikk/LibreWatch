@@ -20,4 +20,4 @@ APP_EVENT_INFO_DEFINE(dfu_status_event,
 APP_EVENT_TYPE_DEFINE(dfu_status_event,
                       log_dfu_status_event,
                       &dfu_status_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_DFU_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_DFU_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

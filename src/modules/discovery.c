@@ -13,7 +13,7 @@
 #include "discovery_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_DISCOVERY_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_DISCOVERY_LOG_LEVEL);
 
 // TODO how to handle errors?
 // TODO subscribe to GATT service changed and rediscover if changed?

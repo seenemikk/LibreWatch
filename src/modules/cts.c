@@ -11,22 +11,22 @@
 #include "discovery_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_CTS_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_CTS_LOG_LEVEL);
 
 #define INITIAL_TIMESTAMP   1640995200  // 2022/01/01 00:00:00 GMT+0000
 #define RESET_MAGIC         0xfeedbabe
 
-#if IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+#if IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
 
-#if CONFIG_SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS < 1
+#if CONFIG_LIBREWATCH_CTS_BACKUP_INTERVAL_SECONDS < 1
 #error "Invalid backup interval"
-#endif // CONFIG_SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS < 1
+#endif // CONFIG_LIBREWATCH_CTS_BACKUP_INTERVAL_SECONDS < 1
 
 __attribute__((section(".noinit"))) static volatile uint32_t backup_magic;
 __attribute__((section(".noinit"))) static volatile time_t backup_timestamp;
 static struct k_work_delayable backup_work;
 
-#endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+#endif // IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
 
 // TODO add date_updated/date_update event
 // TODO is there a way to hook system reset, so we wouldn't need constant backups? Maybe mcumgr os reset hook?
@@ -89,7 +89,7 @@ static void discovery_completed(struct bt_gatt_dm *dm)
 
 #endif // IS_ENABLED(CONFIG_BT_CTS_CLIENT)
 
-#if IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+#if IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
 
 static void backup_timestamp_fn(struct k_work *work)
 {
@@ -98,10 +98,10 @@ static void backup_timestamp_fn(struct k_work *work)
         backup_timestamp = timestamp_ms / 1000;
     }
 
-    k_work_reschedule(&backup_work, K_SECONDS(CONFIG_SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS));
+    k_work_reschedule(&backup_work, K_SECONDS(CONFIG_LIBREWATCH_CTS_BACKUP_INTERVAL_SECONDS));
 }
 
-#endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+#endif // IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
 
 static void cts_init(void)
 {
@@ -113,7 +113,7 @@ static void cts_init(void)
     int err = 0;
     time_t timestamp = INITIAL_TIMESTAMP;
 
-#if IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+#if IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
     if (backup_magic != RESET_MAGIC) {
         LOG_WRN("Unable to restore previous datetime");
         backup_magic = RESET_MAGIC;
@@ -122,8 +122,8 @@ static void cts_init(void)
     timestamp = backup_timestamp;
 
     k_work_init_delayable(&backup_work, backup_timestamp_fn);
-    k_work_reschedule(&backup_work, K_SECONDS(CONFIG_SMARTWATCH_CTS_BACKUP_INTERVAL_SECONDS));
-#endif // IS_ENABLED(CONFIG_SMARTWATCH_CTS_BACKUP)
+    k_work_reschedule(&backup_work, K_SECONDS(CONFIG_LIBREWATCH_CTS_BACKUP_INTERVAL_SECONDS));
+#endif // IS_ENABLED(CONFIG_LIBREWATCH_CTS_BACKUP)
 
     struct tm *tm = gmtime(&timestamp);
     if (tm == NULL || (err = date_time_set(tm))) {

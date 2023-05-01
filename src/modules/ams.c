@@ -12,7 +12,7 @@
 #include "discovery_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_AMS_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_AMS_LOG_LEVEL);
 
 enum ams_flag_type {
     AMS_FLAG_SUBSCRIBED_TO_TRACK,

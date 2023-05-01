@@ -8,7 +8,7 @@
 #include "notification_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_UI_LOG_LEVEL);
 
 #define WIDGET_WIDTH    150
 
@@ -18,7 +18,7 @@ struct notification {
     uint8_t id;
 };
 
-static struct notification notifications[CONFIG_SMARTWATCH_ANCS_MAX_NOTIFICATIONS];
+static struct notification notifications[CONFIG_LIBREWATCH_ANCS_MAX_NOTIFICATIONS];
 static sys_slist_t notifications_list = SYS_SLIST_STATIC_INIT(&notifications);
 
 static lv_obj_t *screen;

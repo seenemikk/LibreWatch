@@ -31,4 +31,4 @@ APP_EVENT_INFO_DEFINE(passkey_event,
 APP_EVENT_TYPE_DEFINE(passkey_event,
                       log_passkey_event,
                       &passkey_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_PASSKEY_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_PASSKEY_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

@@ -1,0 +1,9 @@
+if BOARD_LIBREWATCH
+
+config BOARD
+    default "librewatch"
+
+config BT_CTLR
+    default BT
+
+endif # BOARD_LIBREWATCH

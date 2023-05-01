@@ -1,5 +1,5 @@
-identifier: nrf52840_smartwatch
-name: nRF52840 SmartWatch
+identifier: librewatch
+name: LibreWatch
 type: mcu
 arch: arm
 ram: 256

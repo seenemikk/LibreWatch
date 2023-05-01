@@ -22,7 +22,7 @@ APP_EVENT_INFO_DEFINE(ui_app_show_event,
 APP_EVENT_TYPE_DEFINE(ui_app_show_event,
                       log_ui_app_show_event,
                       &ui_app_show_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_UI_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_UI_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
 
 static void log_ui_popup_show_event(const struct app_event_header *aeh)
 {
@@ -47,4 +47,4 @@ APP_EVENT_INFO_DEFINE(ui_popup_show_event,
 APP_EVENT_TYPE_DEFINE(ui_popup_show_event,
                       log_ui_popup_show_event,
                       &ui_popup_show_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_UI_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_UI_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

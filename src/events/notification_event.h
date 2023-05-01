@@ -40,8 +40,8 @@ struct notification_event {
     struct bt_ancs_evt_notif info;
     uint8_t app_id[BT_ANCS_ATTR_DATA_MAX];
     uint8_t app_name[BT_ANCS_ATTR_DATA_MAX];
-    uint8_t title[CONFIG_SMARTWATCH_ANCS_MAX_TITLE_SIZE];
-    uint8_t message[CONFIG_SMARTWATCH_ANCS_MAX_MESSAGE_SIZE];
+    uint8_t title[CONFIG_LIBREWATCH_ANCS_MAX_TITLE_SIZE];
+    uint8_t message[CONFIG_LIBREWATCH_ANCS_MAX_MESSAGE_SIZE];
 
     // INTERNAL
     uint8_t pending_notif_attributes;

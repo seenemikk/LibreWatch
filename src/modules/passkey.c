@@ -7,7 +7,7 @@
 #include "passkey_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_PASSKEY_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_PASSKEY_LOG_LEVEL);
 
 static atomic_t passkey_active = ATOMIC_INIT(false);
 

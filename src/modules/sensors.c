@@ -11,7 +11,7 @@
 #include "icm42605.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_SENSORS_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_SENSORS_LOG_LEVEL);
 
 static const struct device *imu = DEVICE_DT_GET(DT_NODELABEL(icm42605));
 static uint32_t step_count;
@@ -44,7 +44,7 @@ static void imu_trigger_handler(const struct device *dev, const struct sensor_tr
 
 static void sensors_work_reschedule(void)
 {
-    k_timeout_t delay = K_MSEC(fast_fetch ? CONFIG_SMARTWATCH_SENSORS_FETCH_INTERVAL_FAST : CONFIG_SMARTWATCH_SENSORS_FETCH_INTERVAL_SLOW);
+    k_timeout_t delay = K_MSEC(fast_fetch ? CONFIG_LIBREWATCH_SENSORS_FETCH_INTERVAL_FAST : CONFIG_LIBREWATCH_SENSORS_FETCH_INTERVAL_SLOW);
     k_work_reschedule(&work, delay);
 }
 

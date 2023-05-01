@@ -12,7 +12,7 @@
 #include "notification_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_ANCS_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_ANCS_LOG_LEVEL);
 
 #define ATTR_REQUEST_TIMEOUT_MS         5000U
 #define NOTIF_ATTR_COUNT                ARRAY_SIZE(notif_attributes)
@@ -38,7 +38,7 @@ static uint8_t app_attributes[] = {
 static sys_slist_t notif_queue = SYS_SLIST_STATIC_INIT(&notification_queue);
 static size_t notif_queue_len;
 
-static uint8_t attr_buffer[MAX(CONFIG_SMARTWATCH_ANCS_MAX_TITLE_SIZE, CONFIG_SMARTWATCH_ANCS_MAX_MESSAGE_SIZE)];
+static uint8_t attr_buffer[MAX(CONFIG_LIBREWATCH_ANCS_MAX_TITLE_SIZE, CONFIG_LIBREWATCH_ANCS_MAX_MESSAGE_SIZE)];
 static K_MUTEX_DEFINE(lock);
 static struct bt_ancs_client ancs_c;
 
@@ -124,7 +124,7 @@ static void append_notif(const struct bt_ancs_evt_notif *notif)
 
     k_mutex_lock(&lock, K_FOREVER);
 
-    if (notif_queue_len < CONFIG_SMARTWATCH_ANCS_MAX_NOTIFICATIONS) {
+    if (notif_queue_len < CONFIG_LIBREWATCH_ANCS_MAX_NOTIFICATIONS) {
         sys_slist_append(&notif_queue, &event->header.node);
         notif_queue_len++;
     } else {

@@ -20,7 +20,7 @@
 #include "ui_event.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_UI_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_UI_LOG_LEVEL);
 
 #define POPUP_ANIM_SPEED    200
 #define APP_ANIM_SPEED      100
@@ -58,7 +58,7 @@ static struct ui ui = { .popups.active = UI_POPUP_COUNT, .apps.active = UI_APP_C
 
 static void queue_ui_task(void)
 {
-    k_work_reschedule(&ui.work, K_MSEC(CONFIG_SMARTWATCH_UI_UPDATE_INTERVAL_MS));
+    k_work_reschedule(&ui.work, K_MSEC(CONFIG_LIBREWATCH_UI_UPDATE_INTERVAL_MS));
 }
 
 static void cancel_ui_task(void)

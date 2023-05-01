@@ -81,7 +81,7 @@ APP_EVENT_INFO_DEFINE(media_capabilities_event,
 APP_EVENT_TYPE_DEFINE(media_capabilities_event,
                       log_media_capabilities_event,
                       &media_capabilities_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
 
 APP_EVENT_INFO_DEFINE(media_player_event,
                       ENCODE(NRF_PROFILER_ARG_U32, NRF_PROFILER_ARG_U16, NRF_PROFILER_ARG_U8),
@@ -91,7 +91,7 @@ APP_EVENT_INFO_DEFINE(media_player_event,
 APP_EVENT_TYPE_DEFINE(media_player_event,
                       log_media_player_event,
                       &media_player_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
 
 APP_EVENT_INFO_DEFINE(media_track_event,
                       ENCODE(NRF_PROFILER_ARG_U8),
@@ -101,7 +101,7 @@ APP_EVENT_INFO_DEFINE(media_track_event,
 APP_EVENT_TYPE_DEFINE(media_track_event,
                       log_media_track_event,
                       &media_track_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
 
 APP_EVENT_INFO_DEFINE(media_command_event,
                       ENCODE(NRF_PROFILER_ARG_U8),
@@ -111,4 +111,4 @@ APP_EVENT_INFO_DEFINE(media_command_event,
 APP_EVENT_TYPE_DEFINE(media_command_event,
                       log_media_command_event,
                       &media_command_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_MEDIA_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

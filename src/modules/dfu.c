@@ -11,7 +11,7 @@
 #endif
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(MODULE, CONFIG_SMARTWATCH_DFU_LOG_LEVEL);
+LOG_MODULE_REGISTER(MODULE, CONFIG_LIBREWATCH_DFU_LOG_LEVEL);
 
 static int upload_cb(uint32_t offset, uint32_t size, void *arg)
 {

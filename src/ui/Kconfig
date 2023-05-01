@@ -1,11 +1,11 @@
 menu "UI"
 
-config SMARTWATCH_UI_UPDATE_INTERVAL_MS
+config LIBREWATCH_UI_UPDATE_INTERVAL_MS
     int
-    default 5
+    default 1
 
-module = SMARTWATCH_UI
-module-str = smartwatch_ui
+module = LIBREWATCH_UI
+module-str = ui
 source "subsys/logging/Kconfig.template.log_config"
 
 endmenu

@@ -22,8 +22,8 @@ static lv_obj_t *image_next;
 static lv_obj_t *image_previous;
 static lv_obj_t *image_play_pause;
 
-static char artist[CONFIG_SMARTWATCH_AMS_MAX_STR_LEN + 1];
-static char title[CONFIG_SMARTWATCH_AMS_MAX_STR_LEN + 1];
+static char artist[CONFIG_LIBREWATCH_AMS_MAX_STR_LEN + 1];
+static char title[CONFIG_LIBREWATCH_AMS_MAX_STR_LEN + 1];
 
 static uint16_t playback_rate;
 static uint32_t elapsed_time;

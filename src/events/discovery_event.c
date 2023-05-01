@@ -20,4 +20,4 @@ APP_EVENT_INFO_DEFINE(discovery_event,
 APP_EVENT_TYPE_DEFINE(discovery_event,
                       log_discovery_event,
                       &discovery_event_info,
-                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_SMARTWATCH_DISCOVERY_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));
+                      APP_EVENT_FLAGS_CREATE(IF_ENABLED(CONFIG_LIBREWATCH_DISCOVERY_EVENT_INIT_LOG, (APP_EVENT_TYPE_FLAGS_INIT_LOG_ENABLE))));

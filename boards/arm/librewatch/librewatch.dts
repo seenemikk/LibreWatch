@@ -1,10 +1,10 @@
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
-#include "nrf52840_smartwatch-pinctrl.dtsi"
+#include "librewatch-pinctrl.dtsi"
 
 / {
-    model = "nRF52840 SmartWatch";
-    compatible = "seenemikk,nrf52840-smartwatch";
+    model = "LibreWatch";
+    compatible = "librewatch,librewatch";
 
     chosen {
         zephyr,sram = &sram0;

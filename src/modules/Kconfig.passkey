@@ -1,15 +1,15 @@
 menu "Passkey module"
 
-config SMARTWATCH_PASSKEY
+config LIBREWATCH_PASSKEY
     bool "Enable passkey module"
     depends on CAF
     depends on CAF_BLE_STATE
     help
       This module propagates ble passkey display information.
 
-if SMARTWATCH_PASSKEY
+if LIBREWATCH_PASSKEY
 
-module = SMARTWATCH_PASSKEY
+module = LIBREWATCH_PASSKEY
 module-str = passkey
 source "subsys/logging/Kconfig.template.log_config"
 

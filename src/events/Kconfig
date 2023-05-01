@@ -1,30 +1,30 @@
 menu "Events"
 
-config SMARTWATCH_PASSKEY_EVENT_INIT_LOG
+config LIBREWATCH_PASSKEY_EVENT_INIT_LOG
     bool "Log passkey events"
     default y
 
-config SMARTWATCH_UI_EVENT_INIT_LOG
+config LIBREWATCH_UI_EVENT_INIT_LOG
     bool "Log UI events"
     default y
 
-config SMARTWATCH_SENSORS_EVENT_INIT_LOG
+config LIBREWATCH_SENSORS_EVENT_INIT_LOG
     bool "Log sensors events"
     default y
 
-config SMARTWATCH_MEDIA_EVENT_INIT_LOG
+config LIBREWATCH_MEDIA_EVENT_INIT_LOG
     bool "Log media player events"
     default y
 
-config SMARTWATCH_DISCOVERY_EVENT_INIT_LOG
+config LIBREWATCH_DISCOVERY_EVENT_INIT_LOG
     bool "Log discovery events"
     default y
 
-config SMARTWATCH_NOTIFICATION_EVENT_INIT_LOG
+config LIBREWATCH_NOTIFICATION_EVENT_INIT_LOG
     bool "Log notification events"
     default y
 
-config SMARTWATCH_DFU_EVENT_INIT_LOG
+config LIBREWATCH_DFU_EVENT_INIT_LOG
     bool "Log notification events"
     default y
 

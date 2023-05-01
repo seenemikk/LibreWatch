@@ -13,7 +13,7 @@ list(APPEND CONF_FILE
 )
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(nrf52840_smartwatch)
+project(LibreWatch)
 
 target_sources(app PRIVATE src/main.c)
 
