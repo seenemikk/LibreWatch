@@ -2,6 +2,8 @@
 
 Welcome to LibreWatch, an open-source smartwatch that prioritizes privacy and customization. You can find all the hardware related files [here](https://github.com/seenemikk/LibreWatch-HW).
 
+<center><img src="doc/images/librewatch.jpg" width="400" height="400"></center>
+
 # Features
 
 * Smartphone related:
